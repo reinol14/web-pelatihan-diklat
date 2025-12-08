@@ -1,0 +1,6 @@
+header {
+    background-color: #a09172;
+    padding: 20px;
+    position: relative;
+    z-index: 1; /* Z-index untuk header, akan berada di bawah sidebar */
+  }
