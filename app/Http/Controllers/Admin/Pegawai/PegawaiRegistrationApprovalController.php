@@ -155,7 +155,7 @@ public function approve($id)
             ->update(['status' => 'approved', 'updated_at' => now()]);
     });
 
-    return back()->with('success', 'Registrasi berhasil disetujui dan dimasukkan ke data pegawai.');
+    return back()->with('success', 'Registrasi berhasil disetujui dan dimasukkan ke data Pegawai.');
 }
 
 

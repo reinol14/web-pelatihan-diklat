@@ -9,7 +9,7 @@
   {{-- CSS lokal (opsional, sesuaikan kebutuhanmu) --}}
   <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"><!-- jika kamu punya tema lokal -->
   <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/pegawai.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/Pegawai.css') }}">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
   {{-- Select2 (opsional, jika dipakai) --}}
@@ -23,7 +23,7 @@
   @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
   @if($errors->any())     <div class="alert alert-danger">{{ $errors->first() }}</div> @endif
 
-  <form method="POST" action="{{ route('pegawai.register.submit') }}" enctype="multipart/form-data" class="row g-3">
+  <form method="POST" action="{{ route('Pegawai.register.submit') }}" enctype="multipart/form-data" class="row g-3">
     @csrf
 
     <div class="col-md-6">
@@ -153,7 +153,7 @@
 
     <div class="col-12 d-flex gap-2">
       <button class="btn btn-primary">Kirim Registrasi</button>
-      <a href="{{ route('pegawai.login') }}" class="btn btn-outline-secondary">Sudah punya akun?</a>
+      <a href="{{ route('Pegawai.login') }}" class="btn btn-outline-secondary">Sudah punya akun?</a>
     </div>
   </form>
 </div>

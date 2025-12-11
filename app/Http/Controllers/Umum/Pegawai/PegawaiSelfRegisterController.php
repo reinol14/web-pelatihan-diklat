@@ -15,7 +15,7 @@ public function showForm()
         ->orderBy('unitkerja')
         ->get(['kode_unitkerja','unitkerja']);
 
-    return view('pegawai.registrasi', compact('unitKerjas'));
+    return view('Pegawai.registrasi', compact('unitKerjas'));
 }
 
 
@@ -58,7 +58,7 @@ public function showForm()
 
         $reg = PegawaiRegistration::create($data + ['status' => 'pending']);
 
-        return redirect()->route('pegawai.login')
+        return redirect()->route('Pegawai.login')
             ->with('success', 'Registrasi berhasil dikirim. Akun Anda menunggu persetujuan admin.');
     }
 }

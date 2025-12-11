@@ -43,18 +43,18 @@ Route::post('/pelatihan/{id}/join', [UmumPelatihanController::class, 'join'])->n
 // ASN / Pegawai (User) Routes
 // -----------------------------
 // Login/Register pegawai
-Route::get('/pegawai/login', [PegawaiAuthController::class, 'showLoginForm'])->name('pegawai.login');
-Route::post('/pegawai/login', [PegawaiAuthController::class, 'login'])->name('pegawai.login.submit');
-Route::post('/pegawai/logout', [PegawaiAuthController::class, 'logout'])->name('pegawai.logout');
-Route::get('/pegawai/register', [PegawaiSelfRegisterController::class, 'showForm'])->name('pegawai.register');
-Route::post('/pegawai/register', [PegawaiSelfRegisterController::class, 'submit'])->name('pegawai.register.submit');
+Route::get('/pegawai/login', [PegawaiAuthController::class, 'showLoginForm'])->name('Pegawai.login');
+Route::post('/pegawai/login', [PegawaiAuthController::class, 'login'])->name('Pegawai.login.submit');
+Route::post('/pegawai/logout', [PegawaiAuthController::class, 'logout'])->name('Pegawai.logout');
+Route::get('/pegawai/register', [PegawaiSelfRegisterController::class, 'showForm'])->name('Pegawai.register');
+Route::post('/pegawai/register', [PegawaiSelfRegisterController::class, 'submit'])->name('Pegawai.register.submit');
 
 // Protected pegawai routes (requires auth:pegawais)
 Route::middleware(['auth:pegawais'])->group(function () {
     Route::get('/pegawai/dashboard', [PegawaiDashboardController::class, 'index'])->name('Pegawai.dashboard');
     Route::get('/pegawai/profil', [PegawaiDashboardController::class, 'profil'])->name('Pegawai.profil');
     // Profil pegawai
-    Route::prefix('pegawai')->name('pegawai.')->group(function () {
+    Route::prefix('pegawai')->name('Pegawai.')->group(function () {
     Route::get('/profil/edit', [\App\Http\Controllers\Pegawai\ProfileChangeController::class, 'edit'])->name('profil.edit');
     Route::post('/profil/store', [\App\Http\Controllers\Pegawai\ProfileChangeController::class, 'store'])->name('profil.store');
     });
@@ -63,7 +63,7 @@ Route::middleware(['auth:pegawais'])->group(function () {
     Route::post('/pelatihan/{id}/join',  [PelatihanPendaftaranController::class, 'join'])->name('pelatihan.join');
     Route::post('/pelatihan/{id}/leave', [PelatihanPendaftaranController::class, 'leave'])->name('pelatihan.leave');
 
-    Route::prefix('pegawai')->name('pegawai.')->group(function () {
+    Route::prefix('pegawai')->name('Pegawai.')->group(function () {
     // Laporan Pelatihan (menu pegawai, berdiri sendiri)
     Route::get('/laporan',            [LaporanPelatihanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/{id}/buat',  [LaporanPelatihanController::class, 'create'])->name('laporan.create');

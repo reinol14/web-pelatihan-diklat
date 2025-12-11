@@ -63,9 +63,9 @@
               @csrf
             </form>
           @elseif(auth()->guard('pegawais')->check())
-            <a class="btn-getstarted" href="{{ route('pegawai.logout') }}"
+            <a class="btn-getstarted" href="{{ route('Pegawai.logout') }}"
               onclick="event.preventDefault(); document.getElementById('logout-form-pegawai').submit();">Logout (Pegawai)</a>
-            <form id="logout-form-pegawai" action="{{ route('pegawai.logout') }}" method="POST" style="display: none;">
+            <form id="logout-form-pegawai" action="{{ route('Pegawai.logout') }}" method="POST" style="display: none;">
               @csrf
             </form>
              @endauth
@@ -78,149 +78,130 @@
   <main class="main">
 
     <!-- Hero Section -->
-    <section id="hero" class="hero section">
+<section id="hero" class="hero section">
 
-      <img src="{{ asset('FrontPage/assets/img/hero-bg-abstract.jpg')}}" alt="" data-aos="fade-in" class="">
+  <img src="{{ asset('FrontPage/assets/img/hero-bg-abstract.jpg') }}" alt="" data-aos="fade-in" class="">
 
-      <div class="container">
-        <div class="row content-center" data-aos="zoom-out">
-          <div class="row gy-3 mt-5">
+  <div class="container">
+    <div class="row content-center" data-aos="zoom-out">
+      <div class="row gy-4 mt-5 justify-content-center">
 
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="100">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-motherboard"></i></div>
-                  <h4 class="title">
-                  </a>BROSUR PELATIHAN</a>
-                  </h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
+        <!-- ITEM TEMPLATE (COPY–PASTE UNTUK ITEM LAIN) -->
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="100">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-motherboard"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">BROSUR PELATIHAN</a>
+            </h4>
+          </div>
+        </div>
+        <!-- END ITEM TEMPLATE -->
 
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="200">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-gem"></i></div>
-                  <h4 class="title">E-KATALOG PELATIHAN</h4>
-                      PELATIHAN</a></h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-folder2"></i></div>
-                  <h4 class="title"></h4>DIREKTORY PELATIHAN</h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="300">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-person-workspace"></i></div>
-                  <h4 class="title"><a href="https://e-learning.surakarta.go.id/elearning/solowasis"
-                      target="_blank">SOLOWASIS</a></h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-command"></i></div>
-                  <h4 class="title"><a href="">IZIN PENGEMBANGAN KOMPETENSI OPD</a></h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-journal-arrow-up"></i></div>
-                  <h4 class="title"><a href="">IP ASN</a></h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-file-earmark-pdf"></i></div>
-                  <h4 class="title"><a href="">SERTIFIKAT PELATIHAN</a></h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-people-fill"></i></div>
-                  <h4 class="title"><a href="">PBJ</a></h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-person-fill-gear"></i></div>
-                  <h4 class="title">
-                    PERENCANAAN-AKPK</a>
-                </h4>                
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-person-fill-add"></i></div>
-                  <h4 class="title"><a onclick="window.location='{{ route('Pelatihan.index') }}'">PELATIHAN</a></h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-person-lines-fill"></i></div>
-                  <h4 class="title"><a href="">ALUMNI PELATIHAN</a></h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-            <div class="col-md-6 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
-              <div class="icon-box">
-                <center>
-                  <div class="icon"><i class="bi bi-stickies"></i></div>
-                  <h4 class="title">EVALUASI PASCA DIKLAT</h4>
-                </center>
-              </div>
-            </div>
-            <!--End Icon Box -->
-
-
-
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="150">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-gem"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">E-KATALOG PELATIHAN</a>
+            </h4>
           </div>
         </div>
 
-    </section><!-- /Hero Section -->
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="200">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-folder2"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">DIREKTORI PELATIHAN</a>
+            </h4>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="250">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-person-workspace"></i></div>
+            <h4 class="title">
+              <a href="https://e-learning.surakarta.go.id/elearning/solowasis" target="_blank" class="stretched-link text-decoration-none">SOLOWASIS</a>
+            </h4>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="300">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-command"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">IZIN PENGEMBANGAN KOMPETENSI OPD</a>
+            </h4>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="350">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-journal-arrow-up"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">IP ASN</a>
+            </h4>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="400">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-file-earmark-pdf"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">SERTIFIKAT PELATIHAN</a>
+            </h4>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="450">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-people-fill"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">PBJ</a>
+            </h4>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="500">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-person-fill-gear"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">PERENCANAAN - AKPK</a>
+            </h4>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="550">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-person-fill-add"></i></div>
+            <h4 class="title">
+              <a onclick="window.location='{{ route('Pelatihan.index') }}'" class="stretched-link text-decoration-none">PELATIHAN</a>
+            </h4>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="600">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-person-lines-fill"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">ALUMNI PELATIHAN</a>
+            </h4>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-out" data-aos-delay="650">
+          <div class="icon-box text-center shadow-sm p-4 rounded-4 h-100">
+            <div class="icon mb-3"><i class="bi bi-stickies"></i></div>
+            <h4 class="title">
+              <a href="#" class="stretched-link text-decoration-none">EVALUASI PASCA DIKLAT</a>
+            </h4>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</section>
+
 
 
 

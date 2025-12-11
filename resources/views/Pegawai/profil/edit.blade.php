@@ -22,7 +22,7 @@
     $kategoriJabOptions = ['Jabatan Pimpinan Tinggi','Jabatan Administrasi','Jabatan Fungsional'];
   @endphp
 
-  <form method="POST" action="{{ route('pegawai.profil.store') }}" class="row g-3">
+  <form method="POST" action="{{ route('Pegawai.profil.store') }}" class="row g-3">
     @csrf
 
     {{-- DATA PRIBADI --}}

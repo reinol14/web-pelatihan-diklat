@@ -38,7 +38,7 @@
       <div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
     @endif
 
-    <form method="POST" action="{{ route('pegawai.login.submit') }}" class="mt-2">
+    <form method="POST" action="{{ route('Pegawai.login.submit') }}" class="mt-2">
       @csrf
 
       <div class="form-floating mb-3">
@@ -68,7 +68,7 @@
     {{-- Tambah link ke registrasi --}}
     <div class="text-center mt-3">
       <span class="small text-muted">Belum punya akun?</span>
-      <a href="{{ route('pegawai.register') }}" class="small fw-semibold text-decoration-none">
+      <a href="{{ route('Pegawai.register') }}" class="small fw-semibold text-decoration-none">
         Daftar sekarang
       </a>
     </div>
@@ -86,7 +86,7 @@
   {{-- CSS lokal (opsional, sesuaikan kebutuhanmu) --}}
   <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"><!-- jika kamu punya tema lokal -->
   <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/pegawai.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/Pegawai.css') }}">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
   {{-- Select2 (opsional, jika dipakai) --}}

@@ -29,7 +29,7 @@ class ProfileChangeController extends Controller
         '(III/a)','(III/b)','(III/c)','(III/d)',
         '(IV/a)','(IV/b)','(IV/c)','(IV/d)','(IV/e)',
     ];
-        return view('pegawai.profil.edit', compact('pegawai', 'unitKerjas', 'golonganList', 'atasanCandidates'));
+        return view('Pegawai.profil.edit', compact('pegawai', 'unitKerjas', 'golonganList', 'atasanCandidates'));
     }
 
 public function store(Request $request)

@@ -1,0 +1,216 @@
+/* ================================
+   GLOBAL CONTAINER
+================================ */
+.pelatihan-container {
+    padding: 20px;
+    max-width: 1300px;
+    margin: auto;
+}
+
+/* ================================
+   HERO SECTION
+================================ */
+.hero-section {
+    display: flex;
+    justify-content: space-between;
+    background: white;
+    border-radius: 15px;
+    padding: 35px;
+    align-items: center;
+    margin-bottom: 35px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+}
+
+.hero-content {
+    max-width: 55%;
+}
+
+.hero-title {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.hero-subtitle {
+    font-size: 17px;
+    margin-top: 5px;
+}
+
+.hero-image-wrapper {
+    text-align: center;
+}
+
+.hero-image {
+    width: 280px;
+}
+
+/* ================================
+   SEARCH BAR
+================================ */
+.search-section {
+    margin-bottom: 20px;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    width: 300px;
+    padding: 10px 12px;
+    border-radius: 7px;
+    border: 1px solid #bbb;
+}
+
+.search-btn {
+    background: #10b981;
+    color: white;
+}
+
+/* ================================
+   FILTER SIDEBAR
+================================ */
+.filter-sidebar {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    width: 270px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    float: left;
+    margin-right: 25px;
+}
+
+.filter-title {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.filter-subtitle {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.filter-check {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.filter-btn {
+    margin-top: 14px;
+    background: #10b981;
+    color: white;
+    width: 100%;
+}
+
+/* MOBILE FILTER TOGGLE */
+.filter-toggle {
+    background: #10b981;
+    color: white;
+    margin-bottom: 20px;
+}
+
+/* Show only on certain screens */
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+/* ================================
+   PELATIHAN CARD
+================================ */
+.pelatihan-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.pelatihan-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    position: relative;
+    border-left: 6px solid #10b981;
+}
+
+.pelatihan-badge {
+    background: #10b981;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.pelatihan-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.pelatihan-organizer {
+    font-size: 14px;
+    color: #666;
+}
+
+.pelatihan-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* Footer*/
+.pelatihan-footer {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mode {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.mode-online { background: #e0f2fe; color: #0284c7; }
+.mode-offline { background: #fee2e2; color: #b91c1c; }
+.mode-hybrid { background: #fef9c3; color: #ca8a04; }
+
+.daftar-btn {
+    background: #10b981;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+}
+
+/* ================================
+   PAGINATION
+================================ */
+.pagination-wrapper {
+    margin-top: 25px;
+    text-align: center;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+@media (max-width: 992px) {
+    .desktop-only { display: none; }
+    .mobile-only { display: block; }
+
+    .pelatihan-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .pelatihan-list {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-content { max-width: 100%; }
+}

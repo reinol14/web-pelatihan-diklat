@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="d-flex gap-2">
-      <a href="{{ route('pegawai.profil.edit') }}" class="btn btn-outline-primary">
+      <a href="{{ route('Pegawai.profil.edit') }}" class="btn btn-outline-primary">
         <i class="bi bi-pencil-square me-1"></i> Edit Data
       </a>
     </div>
@@ -89,7 +89,7 @@
   <div class="card mb-4">
     <div class="card-header bg-white d-flex align-items-center justify-content-between">
       <strong>Status Pelatihan</strong>
-      <a href="{{ route('pegawai.laporan.index') }}" class="btn btn-sm btn-outline-primary">
+      <a href="{{ route('Pegawai.laporan.index') }}" class="btn btn-sm btn-outline-primary">
         <i class="bi bi-list-task me-1"></i> Lihat Semua
       </a>
     </div>
@@ -144,7 +144,7 @@
 
                     {{-- Ajukan laporan saat menunggu_laporan (atau kalau 'berjalan' tapi sudah lewat tanggal selesai) --}}
                     @if($sesiId && ($st === 'menunggu_laporan' || ($st === 'berjalan' && $sudahSelesai)))
-                      <a href="{{ route('pegawai.laporan.create', ['id' => $sesiId]) }}"
+                      <a href="{{ route('Pegawai.laporan.create', ['id' => $sesiId]) }}"
                          class="btn btn-sm btn-outline-success" title="Ajukan Laporan">
                         <i class="bi bi-journal-text"></i>
                       </a>

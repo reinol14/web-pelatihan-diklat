@@ -15,7 +15,7 @@ class PegawaiAuthController extends Controller
     {
         $returnTo     = request('return_to');      // boleh kosong
         $requireEmail = request('require_email');  // '1' jika wajib email
-        return view('pegawai.login', compact('returnTo', 'requireEmail'));
+        return view('Pegawai.login', compact('returnTo', 'requireEmail'));
     }
 
     public function login(Request $request)
@@ -87,6 +87,6 @@ class PegawaiAuthController extends Controller
         Auth::guard('pegawais')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('pegawai.login');
+        return redirect()->route('Pegawai.login');
     }
 }

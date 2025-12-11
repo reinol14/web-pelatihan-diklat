@@ -131,7 +131,7 @@
   <a href="{{ route('Pegawai.dashboard') }}" class="btn btn-outline-secondary">
     <i class="bi bi-arrow-left me-1"></i> Kembali
   </a>
-  <a href="{{ route('pegawai.profil.edit') }}" class="btn btn-primary">
+  <a href="{{ route('Pegawai.profil.edit') }}" class="btn btn-primary">
     <i class="bi bi-pencil-square me-1"></i> Edit Profil
   </a>
 </div>

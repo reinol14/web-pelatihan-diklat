@@ -38,14 +38,14 @@
       </a>
 
       
-      <a class="pg-item @if(request()->routeIs('Pegawai.profil') || request()->routeIs('pegawai.profil.edit')) is-active @endif"
+      <a class="pg-item @if(request()->routeIs('Pegawai.profil') || request()->routeIs('Pegawai.profil.edit')) is-active @endif"
          href="{{ route('Pegawai.profil') }}">
         <i class="bi bi-person-circle"></i><span class="pg-text">Profil</span>
       </a>
 
       <div class="pg-divider"></div>
 
-      <form action="{{ route('pegawai.logout') }}" method="POST" class="mt-auto px-1">
+      <form action="{{ route('Pegawai.logout') }}" method="POST" class="mt-auto px-1">
         @csrf
         <button class="pg-item pg-danger w-100" type="submit">
           <i class="bi bi-box-arrow-right"></i><span class="pg-text">Keluar</span>
@@ -61,7 +61,7 @@
 
     <nav class="pg-menu">
       <a class="pg-item pg-primary"
-         href="{{ route('pegawai.login', ['require_email'=>1, 'return_to'=>url()->current()]) }}">
+         href="{{ route('Pegawai.login', ['require_email'=>1, 'return_to'=>url()->current()]) }}">
         <i class="bi bi-box-arrow-in-right"></i><span class="pg-text">Login Pegawai</span>
       </a>
     </nav>
