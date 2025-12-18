@@ -94,7 +94,18 @@ Route::middleware([\App\Http\Middleware\SuperadminMiddleware::class])->group(fun
         Route::put('/{id}',        [AdminUserController::class,'update'])->name('update');
         Route::delete('/{id}',     [AdminUserController::class,'destroy'])->name('destroy');
     });
-
+    
+    Route::get('admin/pegawai/check-duplicates', [PegawaiController::class, 'checkDuplicates'])->name('checkDuplicates');
+    
+    // Admin CRUD for Pelatihan sessions (hanya superadmin)
+    Route::prefix('admin/pelatihan')->name('Admin.pelatihan.')->group(function() {
+        Route::get('/', [PelatihanSessionController::class, 'index'])->name('index');
+        Route::get('/create', [PelatihanSessionController::class, 'create'])->name('create');
+        Route::post('/store', [PelatihanSessionController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [PelatihanSessionController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PelatihanSessionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PelatihanSessionController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // Admin routes
@@ -108,6 +119,8 @@ Route::middleware([\App\Http\Middleware\AdminMiddleware::class])->group(function
     });
     Route::prefix('admin/pegawai')->name('Admin.Pegawai.')->group(function() {
         Route::get('/', [PegawaiController::class, 'index'])->name('index');
+        Route::get('/create', [PegawaiController::class, 'create'])->name('create');
+        Route::post('/', [PegawaiController::class, 'store'])->name('store');
         Route::get('/{id}', [PegawaiController::class, 'show'])->name('show');
         Route::get('/{id}/edit', [PegawaiController::class, 'edit'])->name('edit');
         Route::put('/{id}', [PegawaiController::class, 'update'])->name('update');
@@ -143,15 +156,6 @@ Route::middleware([\App\Http\Middleware\AdminMiddleware::class])->group(function
     });
 
 
-    // Admin CRUD for Pelatihan sessions (admin area)
-    Route::prefix('admin/pelatihan')->name('Admin.pelatihan.')->group(function() {
-        Route::get('/', [PelatihanSessionController::class, 'index'])->name('index');
-        Route::get('/create', [PelatihanSessionController::class, 'create'])->name('create');
-        Route::post('/store', [PelatihanSessionController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [PelatihanSessionController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [PelatihanSessionController::class, 'update'])->name('update');
-        Route::delete('/{id}', [PelatihanSessionController::class, 'destroy'])->name('destroy');
-    });
     Route::prefix('admin/pegawai-profile')->name('Admin.pegawai_profile.')->middleware(['auth'])->group(function () {
         Route::get('/',              [PegawaiProfileApprovalController::class, 'index'])->name('index');     // daftar semua perubahan yg menunggu approval
         Route::get('/{id}',          [PegawaiProfileApprovalController::class, 'show'])->name('show');       // detail perubahan profil

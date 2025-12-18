@@ -1,24 +1,434 @@
 @extends('layouts.app')
 
-{{-- ====== STYLE ====== --}}
+{{-- ====== MODERN DASHBOARD STYLES ====== --}}
 <style>
-  .card{border-radius:1rem;border:none;transition:.3s;box-shadow:0 .75rem 1.25rem rgba(0,0,0,.08)}
-  .card:hover{transform:translateY(-.25rem)}
-  .card-footer{border-radius:0 0 1rem 1rem}
-  .component-container{border:1px solid #e5e7eb;border-radius:.75rem}
-  .component-container:hover{border-color:#d1d5db}
-  .list-mini{margin:0;padding:0;list-style:none}
-  .list-mini li{display:flex;align-items:center;justify-content:space-between;padding:.5rem .25rem;border-bottom:1px dashed #edf2f7}
-  .list-mini li:last-child{border-bottom:0}
-  .badge-soft{border:1px solid rgba(0,0,0,.06);background:#f8fafc}
-  .ratio-pill{min-width:64px; text-align:right}
-  .text-xxs{font-size:.75rem}
-  .text-xs{font-size:.8125rem}
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --shadow-sm: 0 0.125rem 0.5rem rgba(0,0,0,0.075);
+    --shadow-md: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+    --shadow-lg: 0 1rem 3rem rgba(0,0,0,0.175);
+  }
+
+  /* Modern Card Styles */
+  .modern-stat-card {
+    border-radius: 1.25rem;
+    border: none;
+    background: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .modern-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    transition: height 0.3s ease;
+  }
+
+  .modern-stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .modern-stat-card:hover::before {
+    height: 6px;
+  }
+
+  .stat-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-icon-wrapper::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    opacity: 0.1;
+  }
+
+  .stat-icon-wrapper i {
+    font-size: 28px;
+    z-index: 1;
+  }
+
+  .stat-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Component Container Modern */
+  .modern-container {
+    background: white;
+    border-radius: 1.25rem;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .modern-container:hover {
+    border-color: #c7cad1;
+    box-shadow: var(--shadow-md);
+  }
+
+  .modern-container-header {
+    padding: 1.5rem 1.75rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .modern-container-body {
+    padding: 1.75rem;
+  }
+
+  /* Action Center Modern */
+  .action-item {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .action-item:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    transform: translateX(4px);
+  }
+
+  .action-badge {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .action-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Progress Bar Modern */
+  .progress-modern {
+    height: 8px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  }
+
+  .progress-bar-modern {
+    height: 100%;
+    background: var(--primary-gradient);
+    border-radius: 10px;
+    transition: width 0.6s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+
+  /* List Modern */
+  .list-modern {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .list-modern li {
+    padding: 0.875rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    transition: all 0.2s ease;
+  }
+
+  .list-modern li:last-child {
+    border-bottom: none;
+  }
+
+  .list-modern li:hover {
+    background: #f9fafb;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border-radius: 8px;
+  }
+
+  /* Badge Modern */
+  .badge-modern {
+    padding: 0.35rem 0.85rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-modern-primary { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+  .badge-modern-success { background: rgba(17, 153, 142, 0.1); color: #11998e; }
+  .badge-modern-warning { background: rgba(245, 87, 108, 0.1); color: #f5576c; }
+  .badge-modern-info { background: rgba(79, 172, 254, 0.1); color: #4facfe; }
+
+  /* Table Modern */
+  .table-modern {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table-modern thead th {
+    background: linear-gradient(to right, #f8f9fa, #e9ecef);
+    border: none;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem 0.75rem;
+  }
+
+  .table-modern tbody tr {
+    transition: all 0.2s ease;
+  }
+
+  .table-modern tbody tr:hover {
+    background: #f8f9fa;
+    transform: scale(1.01);
+  }
+
+  .table-modern tbody td {
+    border-bottom: 1px solid #f3f4f6;
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+  }
+
+  /* Text Utilities */
+  .text-xxs { font-size: 0.75rem; }
+  .text-xs { font-size: 0.8125rem; }
+  .text-gradient {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  /* Chart Container */
+  .chart-wrapper {
+    position: relative;
+    height: 320px;
+    padding: 1rem;
+  }
+
+  /* Compliance Meter */
+  .compliance-meter {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .compliance-meter-bar {
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 0.75rem;
+  }
+
+  .compliance-meter-fill {
+    height: 100%;
+    background: var(--success-gradient);
+    border-radius: 10px;
+    transition: width 0.8s ease;
+    box-shadow: 0 2px 8px rgba(17, 153, 142, 0.3);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .stat-value { font-size: 1.75rem; }
+    .stat-icon-wrapper { width: 52px; height: 52px; }
+    .modern-container-header { padding: 1.25rem; }
+    .modern-container-body { padding: 1.25rem; }
+    
+    .table-modern {
+      font-size: 0.75rem;
+    }
+
+    .table-modern thead th,
+    .table-modern tbody td {
+      padding: 0.75rem 0.5rem;
+    }
+    
+    .chart-wrapper {
+      height: 250px;
+    }
+    
+    .list-modern li {
+      padding: 0.75rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    :root {
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .modern-stat-card {
+      margin-bottom: 0.75rem;
+      padding: 1rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+    }
+
+    .stat-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      font-size: 1.1rem;
+    }
+
+    .modern-container {
+      margin-bottom: 1rem;
+      border-radius: 1rem;
+    }
+
+    .modern-container-header {
+      padding: 0.875rem;
+    }
+
+    .modern-container-header h5 {
+      font-size: 0.9rem;
+    }
+
+    .modern-container-header small {
+      font-size: 0.7rem;
+    }
+
+    .modern-container-body {
+      padding: 0.875rem;
+    }
+
+    .table-modern thead th {
+      font-size: 0.7rem;
+      padding: 0.5rem 0.25rem;
+    }
+
+    .table-modern tbody td {
+      font-size: 0.7rem;
+      padding: 0.5rem 0.25rem;
+    }
+
+    .badge-modern {
+      font-size: 0.65rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .chart-wrapper {
+      height: 220px;
+      padding: 0.5rem;
+    }
+
+    /* Make tables scrollable on small screens */
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-modern {
+      min-width: 500px;
+    }
+
+    .list-modern li {
+      padding: 0.75rem 0.5rem;
+    }
+
+    .compliance-meter {
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: 375px) {
+    .stat-value {
+      font-size: 1.25rem;
+    }
+
+    .modern-container-header h5 {
+      font-size: 0.85rem;
+    }
+
+    .table-modern {
+      font-size: 0.65rem;
+    }
+
+    .badge-modern {
+      font-size: 0.6rem;
+      padding: 0.2rem 0.4rem;
+    }
+  }
 </style>
 
 @section('content')
 @if (session('error'))
-  <script>alert(@json(session('error')));</script>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <strong>Akses Ditolak!</strong> {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+@endif
+
+@if (session('success'))
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
 @endif
 
 @php
@@ -75,99 +485,132 @@
   {{-- ====== KARTU TOP ====== --}}
   <div class="row mb-4">
     @php
+      $isSuperAdmin = auth()->check() && auth()->user()->is_admin == 1;
+      
       $cards = [
         [
           'title'=>'Total Pegawai',
           'value'=>number_format($pegawaiCount),
           'unit'=>'Orang',
           'icon'=>'iconPegawai.png',
+          'icon-class'=>'people-fill',
           'bg'  =>'bg-primary',
           'sub' => null,
           'link'=> route('Admin.Pegawai.index'),
+          'show' => true,
         ],
         [
-          'title'=>'Total Pelatihan',
-          'value'=>number_format($pelatihanTotal),
-          'unit'=>'pelatihan',
-          'icon'=>'iconAsessment.png',
-          'bg'  =>'bg-danger',
-          'sub' =>'Terbuka: '.number_format($pelatihanDapatDiakses).' • Tertutup: '.number_format($pelatihanTertutup),
-          'link'=> route('Admin.pelatihan.index') // ganti jika route berbeda
-        ],
-        [
-          'title'=>'Perubahan Profil (Butuh Verifikasi)',
+          'title'=>'Perubahan Profil',
           'value'=>number_format($profilePending),
-          'unit'=>'pending',
+          'unit'=>'menunggu verifikasi',
           'icon'=>'iconGapPegawai.png',
+          'icon-class'=>'person-badge-fill',
           'bg'  =>'bg-success',
           'sub' => null,
           'link'=> route('Admin.pegawai_profile.index',['status'=>'pending']),
+          'show' => true,
         ],
         [
-          'title'=>'Akun Pegawai (Butuh Verifikasi)',
+          'title'=>'Akun Pegawai Baru',
           'value'=>number_format($regPending),
-          'unit'=>'pending',
+          'unit'=>'menunggu verifikasi',
           'icon'=>'iconUsulanPelatihan.png',
+          'icon-class'=>'person-plus-fill',
           'bg'  =>'bg-warning',
           'sub' => null,
           'link'=> route('Admin.Pegawai.PegawaiApproval.index',['status'=>'pending']),
+          'show' => true,
         ],
       ];
+      
+      // Tambahkan card Total Pelatihan hanya untuk superadmin
+      if ($isSuperAdmin && Route::has('Admin.pelatihan.index')) {
+        $cards[] = [
+          'title'=>'Total Pelatihan',
+          'value'=>number_format($pelatihanTotal),
+          'unit'=>'sesi pelatihan',
+          'icon'=>'iconAsessment.png',
+          'icon-class'=>'calendar-event-fill',
+          'bg'  =>'bg-danger',
+          'sub' =>'Aktif: '.number_format($pelatihanDapatDiakses).' • Ditutup: '.number_format($pelatihanTertutup),
+          'link'=> route('Admin.pelatihan.index'),
+          'show' => true,
+        ];
+      }
     @endphp
 
     @foreach ($cards as $card)
-      <div class="col-md-3">
-        <div class="card shadow-sm rounded h-100">
-          <div class="card-body d-flex align-items-center p-3">
-            <div class="d-flex flex-column flex-grow-1">
-              <span class="text-muted text-xs mb-1">{{ $card['title'] }}</span>
-              <div class="d-flex flex-column">
-                <h2 class="fw-bold mb-0">{{ $card['value'] }}</h2>
-                <span class="text-muted text-xs">{{ $card['unit'] }}</span>
-                @if(!empty($card['sub']))
-                  <small class="text-muted">{{ $card['sub'] }}</small>
-                @endif
+      @if ($card['show'] ?? true)
+        <div class="col-md-{{ $isSuperAdmin ? '3' : '4' }} mb-3 animate-fade-in-up">
+          <div class="modern-stat-card h-100">
+            <div class="p-4">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="flex-grow-1">
+                  <p class="text-muted text-xs mb-2 text-uppercase" style="letter-spacing: 0.5px;">{{ $card['title'] }}</p>
+                  <h2 class="stat-value mb-1">{{ $card['value'] }}</h2>
+                  <span class="text-muted" style="font-size: 0.875rem;">{{ $card['unit'] }}</span>
+                  @if(!empty($card['sub']))
+                    <div class="mt-2">
+                      <small class="text-muted" style="font-size: 0.75rem;">{{ $card['sub'] }}</small>
+                    </div>
+                  @endif
+                </div>
+                <div class="stat-icon-wrapper {{ $card['bg'] }} bg-opacity-10">
+                  <i class="bi bi-{{ $card['icon-class'] ?? 'graph-up' }} {{ str_replace('bg-', 'text-', $card['bg']) }}"></i>
+                </div>
               </div>
+              <a href="{{ $card['link'] }}" class="btn btn-sm btn-link text-decoration-none p-0 text-primary fw-semibold">
+                <span>Lihat Detail</span>
+                <i class="bi bi-arrow-right ms-1"></i>
+              </a>
             </div>
-            <div class="rounded-circle d-flex align-items-center justify-content-center {{ $card['bg'] }} bg-opacity-10" style="width:48px;height:48px">
-              <img src="{{ asset('images/'.$card['icon']) }}" alt="Icon" width="24" height="24">
-            </div>
-          </div>
-          <div class="card-footer bg-white border-0 text-end py-2">
-            <a href="{{ $card['link'] }}" class="text-decoration-none text-primary text-xs">Detail</a>
           </div>
         </div>
-      </div>
+      @endif
     @endforeach
   </div>
 
   {{-- ====== ROW: CHART & PIE ====== --}}
-  <div class="row mt-2">
-    <div class="col-lg-8">
-      <div class="component-container p-4 h-100">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h6 class="mb-0 fw-bold">Aktivitas 8 Minggu</h6>
-            <small class="text-muted">Registrasi akun • Pendaftaran pelatihan • Pengajuan laporan</small>
+  <div class="row mt-4">
+    <div class="col-lg-8 mb-4">
+      <div class="modern-container h-100">
+        <div class="modern-container-header">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-graph-up text-primary me-2" style="font-size: 1.25rem;"></i>
+            <div>
+              <h5 class="mb-0 fw-bold">Tren Aktivitas 8 Minggu Terakhir</h5>
+              <small class="text-muted">Registrasi • Pendaftaran • Laporan</small>
+            </div>
           </div>
         </div>
-        <div style="position:relative;height:300px">
-          <canvas id="chartWeekly"></canvas>
+        <div class="modern-container-body">
+          <div class="chart-wrapper">
+            <canvas id="chartWeekly"></canvas>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="col-lg-4">
-      <div class="component-container p-4 h-100">
-        <h6 class="fw-bold mb-2">Distribusi Metode Pelatihan</h6>
-        <small class="text-muted d-block mb-3">Online vs Offline vs Hybrid</small>
-        <div style="position:relative;height:260px">
-          <canvas id="chartPieMetode"></canvas>
+    <div class="col-lg-4 mb-4">
+      <div class="modern-container h-100">
+        <div class="modern-container-header">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-pie-chart-fill text-success me-2" style="font-size: 1.25rem;"></i>
+            <div>
+              <h5 class="mb-0 fw-bold">Metode Pelatihan</h5>
+              <small class="text-muted">Distribusi jenis</small>
+            </div>
+          </div>
         </div>
-        <div class="mt-3 d-flex justify-content-between text-xs">
-          @foreach($metodeDistribusi as $m=>$n)
-            <span class="badge badge-soft">{{ $m }}: {{ (int)$n }}</span>
-          @endforeach
+        <div class="modern-container-body">
+          <div style="position:relative;height:240px">
+            <canvas id="chartPieMetode"></canvas>
+          </div>
+          <div class="mt-3 d-flex flex-wrap gap-2">
+            @foreach($metodeDistribusi as $m=>$n)
+              <span class="badge-modern badge-modern-primary">{{ $m }}: <strong>{{ (int)$n }}</strong></span>
+            @endforeach
+          </div>
         </div>
       </div>
     </div>
@@ -175,76 +618,136 @@
 
   {{-- ====== ROW: KALENDER & ACTION CENTER ====== --}}
   <div class="row mt-4">
-    <div class="col-lg-8">
-      <div class="component-container p-4">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="mb-0 fw-bold">Kalender & Deadline (30 hari)</h6>
-          <a href="{{ route('Admin.pelatihan.index') }}" class="text-decoration-none text-primary text-xs">Lihat semua</a>
-        </div>
-
-        <ul class="list-mini">
-          @forelse($deadlineSoon as $s)
-            @php
-              $mulai = $s->tanggal_mulai ? \Illuminate\Support\Carbon::parse($s->tanggal_mulai) : null;
-              $dStr  = $mulai ? $mulai->format('d M Y') : '-';
-              // H-7 tutup pendaftaran
-              $hmin7 = $mulai ? $mulai->copy()->startOfDay()->subDays(7) : null;
-              $isClosedH7 = $hmin7 ? now()->greaterThanOrEqualTo($hmin7) : false;
-            @endphp
-            <li>
+    @if($isSuperAdmin && Route::has('Admin.pelatihan.index'))
+    <div class="col-lg-8 mb-4">
+      <div class="modern-container">
+        <div class="modern-container-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-calendar-week text-danger me-2" style="font-size: 1.25rem;"></i>
               <div>
-                <div class="fw-semibold">{{ $s->nama_pelatihan ?? '-' }}</div>
-                <div class="text-muted text-xxs">Mulai: {{ $dStr }}</div>
+                <h5 class="mb-0 fw-bold">Jadwal & Deadline</h5>
+                <small class="text-muted">30 hari ke depan</small>
               </div>
-              <div class="text-end">
-                <span class="badge {{ ($s->status??'aktif')==='aktif' ? 'bg-primary' : 'bg-secondary' }} bg-opacity-10 text-primary text-xs">
-                  {{ $s->status ?? 'aktif' }}
-                </span>
-                @if($isClosedH7)
-                  <div class="text-danger text-xxs">Pendaftaran H-7 ditutup</div>
-                @endif
-              </div>
-            </li>
-          @empty
-            <li class="text-muted">Tidak ada jadwal dalam 30 hari ke depan.</li>
-          @endforelse
-        </ul>
+            </div>
+            <a href="{{ route('Admin.pelatihan.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+              <span>Lihat Semua</span>
+              <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+        <div class="modern-container-body">
+          <ul class="list-modern">
+            @forelse($deadlineSoon as $s)
+              @php
+                $mulai = $s->tanggal_mulai ? \Illuminate\Support\Carbon::parse($s->tanggal_mulai) : null;
+                $dStr  = $mulai ? $mulai->format('d M Y') : '-';
+                $hmin7 = $mulai ? $mulai->copy()->startOfDay()->subDays(7) : null;
+                $isClosedH7 = $hmin7 ? now()->greaterThanOrEqualTo($hmin7) : false;
+              @endphp
+              <li class="d-flex justify-content-between align-items-start">
+                <div class="d-flex align-items-start">
+                  <div class="me-3" style="min-width: 48px;">
+                    <div class="text-center p-2 rounded" style="background: rgba(102, 126, 234, 0.1);">
+                      <div class="fw-bold text-primary" style="font-size: 1.25rem; line-height: 1;">{{ $mulai ? $mulai->format('d') : '-' }}</div>
+                      <div class="text-muted text-xxs text-uppercase">{{ $mulai ? $mulai->format('M') : '' }}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="fw-semibold mb-1">{{ $s->nama_pelatihan ?? '-' }}</div>
+                    <div class="text-muted text-xs">
+                      <i class="bi bi-calendar3 me-1"></i>{{ $dStr }}
+                    </div>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <span class="badge-modern {{ ($s->status??'aktif')==='aktif' ? 'badge-modern-success' : 'badge-modern-info' }}">
+                    {{ $s->status ?? 'aktif' }}
+                  </span>
+                  @if($isClosedH7)
+                    <div class="text-danger text-xxs mt-1">
+                      <i class="bi bi-exclamation-circle-fill me-1"></i>Ditutup H-7
+                    </div>
+                  @endif
+                </div>
+              </li>
+            @empty
+              <li class="text-muted text-center py-4">
+                <i class="bi bi-calendar-x" style="font-size: 2rem; opacity: 0.3;"></i>
+                <div class="mt-2">Tidak ada jadwal dalam 30 hari ke depan</div>
+              </li>
+            @endforelse
+          </ul>
+        </div>
       </div>
     </div>
+    @endif
 
-    <div class="col-lg-4">
-      <div class="component-container p-4 h-100">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="mb-0 fw-bold">Action Center</h6>
-        </div>
-        <ul class="list-group">
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            Akun pending
-            <a class="btn btn-sm btn-outline-primary" href="{{ route('Admin.Pegawai.PegawaiApproval.index',['status'=>'pending']) }}">
-              {{ $ac['reg_pending'] }} tindak
-            </a>
-          </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            Perubahan profil pending
-            <a class="btn btn-sm btn-outline-primary" href="{{ route('Admin.pegawai_profile.index',['status'=>'pending']) }}">
-              {{ $ac['profile_pending'] }} tindak
-            </a>
-          </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            Laporan pelatihan pending
-            <a class="btn btn-sm btn-outline-primary" href="{{ route('Admin.pelatihan.index',[],false) ?? '#' }}">
-              {{ $ac['laporan_pending'] }} tindak
-            </a>
-          </li>
-        </ul>
-
-        <div class="mt-3 p-2 rounded border bg-light">
-          <div class="d-flex justify-content-between">
-            <span class="text-xs text-muted">Kepatuhan laporan</span>
-            <span class="fw-semibold">{{ $complianceRate }}%</span>
+    <div class="col-lg-{{ $isSuperAdmin ? '4' : '12' }}">
+      <div class="modern-container h-100">
+        <div class="modern-container-header">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-bell-fill text-warning me-2" style="font-size: 1.25rem;"></i>
+            <div>
+              <h5 class="mb-0 fw-bold">Pusat Tindakan</h5>
+              <small class="text-muted">Item yang perlu perhatian</small>
+            </div>
           </div>
-          <div class="text-xxs text-muted">
-            Approved: {{ $compApproved }} / {{ $compTotal }}
+        </div>
+        <div class="modern-container-body">
+          <div class="action-item">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-person-fill-add text-primary me-3" style="font-size: 1.5rem;"></i>
+              <div>
+                <div class="fw-semibold">Akun Pegawai Baru</div>
+                <small class="text-muted">Menunggu verifikasi</small>
+              </div>
+            </div>
+            <a class="action-badge text-decoration-none" href="{{ route('Admin.Pegawai.PegawaiApproval.index',['status'=>'pending']) }}">
+              {{ $ac['reg_pending'] }}
+            </a>
+          </div>
+
+          <div class="action-item">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-person-badge text-success me-3" style="font-size: 1.5rem;"></i>
+              <div>
+                <div class="fw-semibold">Perubahan Profil</div>
+                <small class="text-muted">Menunggu approval</small>
+              </div>
+            </div>
+            <a class="action-badge text-decoration-none" href="{{ route('Admin.pegawai_profile.index',['status'=>'pending']) }}" style="background: var(--success-gradient);">
+              {{ $ac['profile_pending'] }}
+            </a>
+          </div>
+
+          <div class="action-item">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-file-earmark-text text-info me-3" style="font-size: 1.5rem;"></i>
+              <div>
+                <div class="fw-semibold">Laporan Pelatihan</div>
+                <small class="text-muted">Perlu ditinjau</small>
+              </div>
+            </div>
+            <a class="action-badge text-decoration-none" href="{{ route('Admin.pelatihan.index',[],false) ?? '#' }}" style="background: var(--info-gradient);">
+              {{ $ac['laporan_pending'] }}
+            </a>
+          </div>
+
+          <div class="compliance-meter">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="text-muted text-xs">Tingkat Kepatuhan Laporan</span>
+              </div>
+              <span class="fw-bold h4 mb-0 text-gradient">{{ $complianceRate }}%</span>
+            </div>
+            <div class="compliance-meter-bar mt-2">
+              <div class="compliance-meter-fill" style="width: {{ $complianceRate }}%"></div>
+            </div>
+            <div class="text-xxs text-muted mt-2">
+              <i class="bi bi-check-circle-fill text-success me-1"></i>
+              {{ $compApproved }} dari {{ $compTotal }} laporan disetujui
+            </div>
           </div>
         </div>
       </div>
@@ -252,124 +755,61 @@
   </div>
 
   {{-- ====== ROW: KUOTA & RINGKASAN LAPORAN ====== --}}
+  @if($isSuperAdmin)
   <div class="row mt-4">
-    <div class="col-lg-8">
-      <div class="component-container p-4">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="mb-0 fw-bold">Kuota & Kepadatan (Top 5)</h6>
+    <div class="col-lg-8 mb-4">
+      <div class="modern-container">
+        <div class="modern-container-header">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-bar-chart-fill text-info me-2" style="font-size: 1.25rem;"></i>
+            <div>
+              <h5 class="mb-0 fw-bold">Pelatihan Terpadat</h5>
+              <small class="text-muted">Top 5 berdasarkan kuota</small>
+            </div>
+          </div>
         </div>
-
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Pelatihan</th>
-              <th class="text-center">Terpakai / Kuota</th>
-              <th class="text-end">Rasio</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($topPadat as $row)
-              @php
-                $kuota    = (int)($row->kuota ?? 0);
-                $terpakai = (int)($row->terpakai ?? 0);
-                $ratio    = $kuota>0 ? $terpakai/max(1,$kuota) : 0;
-                $pct      = round($ratio*100);
-              @endphp
+        <div class="modern-container-body">
+          <table class="table table-modern mb-0">
+            <thead>
               <tr>
-                <td>
-                  <div class="fw-semibold">{{ $row->nama_pelatihan ?? '-' }}</div>
-                  <div class="text-muted text-xxs">ID: {{ $row->id }}</div>
-                </td>
-                <td class="text-center">
-                  <span class="badge badge-soft">{{ $terpakai }}/{{ $kuota>0?$kuota:'∞' }}</span>
-                </td>
-                <td class="text-end ratio-pill">
-                  {{ $pct }}%
-                </td>
-              </tr>
-            @empty
-              <tr><td colspan="3" class="text-muted text-center">Belum ada data.</td></tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="col-lg-4">
-      <div class="component-container p-4">
-        <h6 class="fw-bold mb-2">Ringkasan Laporan Pelatihan</h6>
-
-        <div class="d-flex gap-2 mb-3">
-          <span class="badge bg-warning text-dark">Pending: {{ $lapSum['pending'] ?? 0 }}</span>
-          <span class="badge bg-success">Approved: {{ $lapSum['approved'] ?? 0 }}</span>
-          <span class="badge bg-danger">Rejected: {{ $lapSum['rejected'] ?? 0 }}</span>
-        </div>
-
-        <div class="text-muted text-xs mb-2">Pending paling lama</div>
-        <ul class="list-mini">
-          @forelse($lapAging as $l)
-            <li>
-              <div>
-                <div class="fw-semibold text-xs">{{ $l->pelatihan_nama ?? '-' }}</div>
-                <div class="text-xxs text-muted">{{ $l->pegawai_nama ?? '-' }}</div>
-              </div>
-              <small class="text-muted">
-                {{ \Illuminate\Support\Carbon::parse($l->created_at)->diffForHumans(['parts'=>2,'short'=>true]) }}
-              </small>
-            </li>
-          @empty
-            <li class="text-muted">Tidak ada.</li>
-          @endforelse
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  {{-- ====== DETAIL TABEL: AKUN PENDING (seperti semula) ====== --}}
-  <div class="row mt-4">
-    <div class="col-lg-8">
-      <div class="component-container">
-        <div class="card-header d-flex justify-content-between align-items-center bg-white py-3 px-4 border-0">
-          <h5 class="mb-0 fw-bold">Akun Pegawai Menunggu Verifikasi</h5>
-          <a href="{{ route('Admin.Pegawai.PegawaiApproval.index',['status'=>'pending']) }}" class="text-primary text-decoration-none">View All</a>
-        </div>
-        <div class="card-body px-4 pb-4 pt-0">
-          <table class="table table-hover mb-0">
-            <thead style="background:#F0F4FF">
-              <tr>
-                <th class="py-3" style="width:5%">No</th>
-                <th class="py-3" style="width:22%">Tanggal Pengajuan</th>
-                <th class="py-3" style="width:26%">Nama</th>
-                <th class="py-3" style="width:27%">Email / NIP</th>
-                <th class="py-3" style="width:10%">Status</th>
-                <th class="py-3 text-center" style="width:10%">Aksi</th>
+                <th>Nama Pelatihan</th>
+                <th class="text-center">Kuota</th>
+                <th class="text-end">Persentase</th>
               </tr>
             </thead>
             <tbody>
-              @forelse($pendingRegs as $i => $reg)
+              @forelse($topPadat as $row)
+                @php
+                  $kuota    = (int)($row->kuota ?? 0);
+                  $terpakai = (int)($row->terpakai ?? 0);
+                  $ratio    = $kuota>0 ? $terpakai/max(1,$kuota) : 0;
+                  $pct      = round($ratio*100);
+                  $colorClass = $pct >= 90 ? 'danger' : ($pct >= 70 ? 'warning' : 'success');
+                @endphp
                 <tr>
-                  <td class="py-3 px-4">{{ $i+1 }}</td>
-                  <td class="py-3">
-                    <div>{{ \Illuminate\Support\Carbon::parse($reg->created_at)->format('d/m/Y') }}</div>
-                    <small class="text-muted">{{ \Illuminate\Support\Carbon::parse($reg->created_at)->format('H:i') }} WIB</small>
+                  <td>
+                    <div class="fw-semibold">{{ $row->nama_pelatihan ?? '-' }}</div>
+                    <div class="text-muted text-xxs">ID: {{ $row->id }}</div>
                   </td>
-                  <td class="py-3">{{ $reg->nama }}</td>
-                  <td class="py-3">
-                    <div>{{ $reg->email }}</div>
-                    <small class="text-muted">{{ $reg->nip }}</small>
+                  <td class="text-center">
+                    <span class="badge-modern badge-modern-info">{{ $terpakai }} / {{ $kuota>0?$kuota:'∞' }}</span>
                   </td>
-                  <td class="py-3">
-                    <span class="badge bg-warning text-warning bg-opacity-10">Pending</span>
-                  </td>
-                  <td class="py-3 text-center">
-                    <a class="btn btn-sm btn-outline-primary rounded-circle"
-                       href="{{ route('Admin.Pegawai.PegawaiApproval.show', $reg->id) }}" title="Tinjau">
-                      <i class="bi bi-eye"></i>
-                    </a>
+                  <td class="text-end">
+                    <div class="d-flex align-items-center justify-content-end">
+                      <div class="progress-modern me-2" style="width: 80px;">
+                        <div class="progress-bar-modern bg-{{ $colorClass }}" style="width: {{ min($pct, 100) }}%"></div>
+                      </div>
+                      <span class="fw-semibold text-{{ $colorClass }}">{{ $pct }}%</span>
+                    </div>
                   </td>
                 </tr>
               @empty
-                <tr><td colspan="6" class="text-center text-muted py-4">Tidak ada akun pending.</td></tr>
+                <tr>
+                  <td colspan="3" class="text-muted text-center py-4">
+                    <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.3;"></i>
+                    <div class="mt-2">Belum ada data</div>
+                  </td>
+                </tr>
               @endforelse
             </tbody>
           </table>
@@ -377,12 +817,149 @@
       </div>
     </div>
 
-    {{-- Kosongkan/isi panel kanan sesuai kebutuhanmu --}}
-    <div class="col-lg-4">
-      <div class="component-container p-4 h-100">
-        <h6 class="fw-bold mb-2">Catatan</h6>
-        <div class="text-muted text-xs">
-          Panel ini bisa dipakai untuk pengumuman admin atau ringkasan kebijakan terbaru.
+    <div class="col-lg-4 mb-4">
+      <div class="modern-container">
+        <div class="modern-container-header">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-file-text-fill text-success me-2" style="font-size: 1.25rem;"></i>
+            <div>
+              <h5 class="mb-0 fw-bold">Status Laporan</h5>
+              <small class="text-muted">Ringkasan pelatihan</small>
+            </div>
+          </div>
+        </div>
+        <div class="modern-container-body">
+          <div class="d-flex flex-wrap gap-2 mb-4">
+            <div class="flex-fill text-center p-3 rounded" style="background: rgba(245, 158, 11, 0.1);">
+              <div class="text-warning fw-bold" style="font-size: 1.5rem;">{{ $lapSum['pending'] ?? 0 }}</div>
+              <div class="text-muted text-xs">Pending</div>
+            </div>
+            <div class="flex-fill text-center p-3 rounded" style="background: rgba(16, 185, 129, 0.1);">
+              <div class="text-success fw-bold" style="font-size: 1.5rem;">{{ $lapSum['approved'] ?? 0 }}</div>
+              <div class="text-muted text-xs">Disetujui</div>
+            </div>
+            <div class="flex-fill text-center p-3 rounded" style="background: rgba(239, 68, 68, 0.1);">
+              <div class="text-danger fw-bold" style="font-size: 1.5rem;">{{ $lapSum['rejected'] ?? 0 }}</div>
+              <div class="text-muted text-xs">Ditolak</div>
+            </div>
+          </div>
+
+          <div class="border-top pt-3">
+            <div class="text-muted text-xs mb-2 fw-semibold">Pending Terlama</div>
+            <ul class="list-modern">
+              @forelse($lapAging as $l)
+                <li class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <div class="fw-semibold text-xs">{{ $l->pelatihan_nama ?? '-' }}</div>
+                    <div class="text-xxs text-muted">{{ $l->pegawai_nama ?? '-' }}</div>
+                  </div>
+                  <small class="badge-modern badge-modern-warning">
+                    {{ \Illuminate\Support\Carbon::parse($l->created_at)->diffForHumans(['parts'=>1,'short'=>true]) }}
+                  </small>
+                </li>
+              @empty
+                <li class="text-muted text-center py-2 text-xs">Tidak ada data</li>
+              @endforelse
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  @endif
+
+  {{-- ====== DETAIL TABEL: AKUN PENDING ====== --}}
+  <div class="row mt-4">
+    <div class="col-lg-8 mb-4">
+      <div class="modern-container">
+        <div class="modern-container-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-hourglass-split text-warning me-2" style="font-size: 1.25rem;"></i>
+              <div>
+                <h5 class="mb-0 fw-bold">Akun Pegawai Menunggu Verifikasi</h5>
+                <small class="text-muted">Registrasi terbaru</small>
+              </div>
+            </div>
+            <a href="{{ route('Admin.Pegawai.PegawaiApproval.index',['status'=>'pending']) }}" class="btn btn-sm btn-outline-primary rounded-pill">
+              <span>Lihat Semua</span>
+              <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+        <div class="modern-container-body p-0">
+          <div class="table-responsive">
+            <table class="table table-modern mb-0">
+              <thead>
+                <tr>
+                  <th style="width:5%">No</th>
+                  <th style="width:22%">Tanggal</th>
+                  <th style="width:26%">Nama</th>
+                  <th style="width:27%">Email / NIP</th>
+                  <th style="width:10%">Status</th>
+                  <th class="text-center" style="width:10%">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                @forelse($pendingRegs as $i => $reg)
+                  <tr>
+                    <td class="px-3">{{ $i+1 }}</td>
+                    <td>
+                      <div class="fw-semibold">{{ \Illuminate\Support\Carbon::parse($reg->created_at)->format('d/m/Y') }}</div>
+                      <small class="text-muted">{{ \Illuminate\Support\Carbon::parse($reg->created_at)->format('H:i') }} WIB</small>
+                    </td>
+                    <td class="fw-semibold">{{ $reg->nama }}</td>
+                    <td>
+                      <div>{{ $reg->email }}</div>
+                      <small class="text-muted">{{ $reg->nip }}</small>
+                    </td>
+                    <td>
+                      <span class="badge-modern badge-modern-warning">Pending</span>
+                    </td>
+                    <td class="text-center">
+                      <a class="btn btn-sm btn-outline-primary rounded-circle" href="{{ route('Admin.Pegawai.PegawaiApproval.show', $reg->id) }}" title="Tinjau">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-5">
+                      <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.2;"></i>
+                      <div class="mt-2">Tidak ada akun pending</div>
+                    </td>
+                  </tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+      <div class="modern-container h-100">
+        <div class="modern-container-header">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-megaphone-fill text-info me-2" style="font-size: 1.25rem;"></i>
+            <div>
+              <h5 class="mb-0 fw-bold">Pengumuman</h5>
+              <small class="text-muted">Informasi penting</small>
+            </div>
+          </div>
+        </div>
+        <div class="modern-container-body">
+          <div class="p-3 rounded" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-left: 4px solid #667eea;">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-info-circle-fill text-primary me-2 mt-1" style="font-size: 1.25rem;"></i>
+              <div>
+                <div class="fw-semibold mb-2">Selamat Datang!</div>
+                <div class="text-muted text-xs">
+                  Panel ini dapat digunakan untuk menampilkan pengumuman admin atau ringkasan kebijakan terbaru kepada seluruh pengguna sistem.
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

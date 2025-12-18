@@ -1,27 +1,35 @@
 <!-- resources/views/header.blade.php -->
 <header class="header">
-    <div class="container">
-        <div class="logo">
-            <h2>
-                @auth
-                    @if (session('nama_unitkerja'))
-                        {{ session('nama_admin') }} - (
-                        {{ session('nama_unitkerja') }})
-                    @else
-                        {{ session('nama_admin') }}
-                    @endif
-                @endauth
-            </h2>
-        </div>
+    <div class="container-fluid px-3 px-md-4">
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <!-- Mobile Menu Toggle -->
+            <button class="btn btn-link text-white d-md-none p-0 me-3" id="mobileSidebarToggle" style="font-size: 1.5rem;">
+                <i class="fa fa-bars"></i>
+            </button>
+            
+            <div class="logo flex-grow-1">
+                <h2 class="mb-0">
+                    @auth
+                        @if (session('nama_unitkerja'))
+                            <span class="d-none d-md-inline">{{ session('nama_admin') }} - ({{ session('nama_unitkerja') }})</span>
+                            <span class="d-md-none">{{ Str::limit(session('nama_admin'), 15) }}</span>
+                        @else
+                            <span class="d-none d-md-inline">{{ session('nama_admin') }}</span>
+                            <span class="d-md-none">{{ Str::limit(session('nama_admin'), 15) }}</span>
+                        @endif
+                    @endauth
+                </h2>
+            </div>
 
-        @auth
-            <form action="{{ route('logout') }}" method="POST" class="logout-form">
-                @csrf
-                <button type="submit" class="btn-logout">
-                    <i class="fa fa-sign-out-alt"></i> Logout
-                </button>
-            </form>
-        @endauth
+            @auth
+                <form action="{{ route('logout') }}" method="POST" class="logout-form">
+                    @csrf
+                    <button type="submit" class="btn-logout">
+                        <i class="fa fa-sign-out-alt"></i> <span class="d-none d-sm-inline">Logout</span>
+                    </button>
+                </form>
+            @endauth
+        </div>
     </div>
 </header>
 
@@ -34,51 +42,43 @@
         position: fixed;
         top: 0;
         left: 250px;
-        /* Default for expanded sidebar */
         width: calc(100% - 250px);
-        /* Default for expanded sidebar */
         background: linear-gradient(135deg, #007bff, #6610f2);
-        padding: 15px 20px;
+        padding: 12px 0;
         color: white;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         z-index: 1000;
         transition: all 0.3s ease;
-        /* Smooth transition for dynamic adjustments */
+        min-height: 60px;
+        display: flex;
+        align-items: center;
     }
 
     /* Header Spacer */
     .header-spacer {
-        height: 40px;
-        /* Match header height */
+        height: 60px;
         width: 100%;
     }
 
     /* Adjustments for collapsed sidebar */
     .sidebar-closed .header {
         left: 60px;
-        /* Adjust for collapsed sidebar */
         width: calc(100% - 60px);
-        /* Adjust for collapsed sidebar */
     }
 
     /* Main Content Adjustment */
     .main-content {
         margin-top: 26px;
-        /* Add margin to prevent overlap with the fixed header */
-    }
-
-    /* Container */
-    .header .container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
     }
 
     /* Logo */
     .logo h2 {
         margin: 0;
-        font-size: 24px;
+        font-size: clamp(14px, 4vw, 24px);
         font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     /* User Info */
@@ -122,41 +122,64 @@
         color: #0056b3;
     }
 
-    /* Responsif */
+    /* Mobile Sidebar Toggle */
+    #mobileSidebarToggle {
+        background: none;
+        border: none;
+        outline: none;
+        box-shadow: none;
+    }
+
+    #mobileSidebarToggle:hover,
+    #mobileSidebarToggle:focus {
+        color: rgba(255, 255, 255, 0.8) !important;
+        text-decoration: none;
+    }
+
+    /* Responsive Styles */
     @media (max-width: 768px) {
-        .header .container {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .user-info {
-            flex-direction: column;
-            margin-top: 10px;
-        }
-
-        .role {
-            margin-bottom: 5px;
-        }
-
-        .logout-form {
-            margin-top: 10px;
-        }
-
         .header {
-            left: 60px;
-            /* Adjusted for collapsed sidebar on smaller screens */
-            width: calc(100% - 60px);
-            /* Adjusted for collapsed sidebar */
-        }
-
-        .main-content {
-            margin-top: 90px;
-            /* Adjust margin for smaller screens */
+            left: 0 !important;
+            width: 100% !important;
+            padding: 10px 0;
         }
 
         .header-spacer {
-            height: 120px;
-            /* Increased height for mobile view */
+            height: 60px;
+        }
+
+        .logo h2 {
+            font-size: 16px;
+        }
+
+        .btn-logout {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn-logout i {
+            margin-right: 4px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .header {
+            padding: 8px 0;
+            min-height: 50px;
+        }
+
+        .header-spacer {
+            height: 50px;
+        }
+
+        .logo h2 {
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            padding: 5px 10px;
+            font-size: 12px;
+            min-width: auto;
         }
     }
 </style>

@@ -107,23 +107,89 @@
         padding: 0.625rem 2rem;
         font-weight: 500;
     }
-    .readonly-badge {
-        display: inline-block;
-        background: #e7f3ff;
-        color: #0066cc;
-        padding: 0.25rem 0.75rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        margin-left: 0.5rem;
-    }
     @media (max-width: 768px) {
         .form-header {
-            padding: 1.5rem;
+            padding: 1.5rem 1rem;
+        }
+        .form-header h3 {
+            font-size: 1.25rem;
+        }
+        .form-header p {
+            font-size: 0.875rem;
+        }
+        .card-body {
+            padding: 1.5rem 1rem !important;
+        }
+        .section-title {
+            font-size: 1rem;
+        }
+        .form-label {
+            font-size: 0.875rem;
+        }
+        .form-control, .form-select {
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
         }
         .btn-primary, .btn-secondary {
             width: 100%;
             margin-bottom: 0.5rem;
+        }
+        .profile-upload-wrapper {
+            width: 120px;
+            height: 120px;
+        }
+        .profile-preview {
+            width: 120px;
+            height: 120px;
+        }
+        .upload-overlay {
+            width: 120px;
+            height: 120px;
+        }
+        .upload-overlay i {
+            font-size: 24px;
+        }
+        /* Stack form groups vertically on mobile */
+        .row.mb-3 {
+            margin-bottom: 0.75rem !important;
+        }
+        .col-md-6 {
+            margin-bottom: 0.75rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .form-header {
+            padding: 1.25rem 0.875rem;
+        }
+        .form-header h3 {
+            font-size: 1.1rem;
+        }
+        .card-body {
+            padding: 1.25rem 0.875rem !important;
+        }
+        .section-divider {
+            margin: 1.5rem 0 1rem 0;
+        }
+        .section-title {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        .profile-upload-wrapper {
+            width: 100px;
+            height: 100px;
+        }
+        .profile-preview {
+            width: 100px;
+            height: 100px;
+        }
+        .upload-overlay {
+            width: 100px;
+            height: 100px;
+        }
+        .btn-primary, .btn-secondary {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.875rem;
         }
     }
 </style>
@@ -136,8 +202,8 @@
                 <div class="form-header">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h3 class="mb-1"><i class="bi bi-pencil-square me-2"></i>Edit Data Pegawai</h3>
-                            <p class="mb-0 opacity-75">Perbarui informasi data pegawai</p>
+                            <h3 class="mb-1"><i class="bi bi-person-plus-fill me-2"></i>Tambah Data Pegawai</h3>
+                            <p class="mb-0 opacity-75">Masukkan informasi data pegawai baru</p>
                         </div>
                         <div class="d-none d-md-block">
                             <i class="bi bi-person-badge" style="font-size: 3rem; opacity: 0.3;"></i>
@@ -146,25 +212,20 @@
                 </div>
 
                 <div class="card-body p-4">
-                    <form action="{{ route('Admin.Pegawai.update', $pegawai->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('Admin.Pegawai.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        @method('PUT')
 
                         <!-- Foto Profil Section -->
                         <div class="text-center mb-4 pb-4 section-divider">
                             <label class="form-label d-block mb-3">Foto Profil</label>
                             <div class="profile-upload-wrapper">
-                                @if ($pegawai->foto)
-                                    <img src="{{ asset('storage/' . $pegawai->foto) }}" alt="Foto Pegawai" class="profile-preview" id="preview-image">
-                                @else
-                                    <img src="{{ asset('images/default-profile.png') }}" alt="Default Foto" class="profile-preview" id="preview-image">
-                                @endif
+                                <img src="{{ asset('images/default-profile.png') }}" alt="Default Foto" class="profile-preview" id="preview-image">
                                 <label for="foto" class="upload-overlay">
                                     <i class="bi bi-camera-fill"></i>
                                 </label>
                             </div>
                             <input type="file" class="d-none" id="foto" name="foto" accept="image/*">
-                            <small class="text-muted d-block mt-2">Klik pada foto untuk mengganti</small>
+                            <small class="text-muted d-block mt-2">Klik pada foto untuk mengunggah</small>
                         </div>
 
                         <!-- Data Identitas -->
@@ -175,15 +236,29 @@
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <label for="nip" class="form-label">NIP <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip" name="nip" value="{{ old('nip', $pegawai->nip) }}" required>
+                                <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip" name="nip" value="{{ old('nip') }}" placeholder="Masukkan NIP" required>
                                 @error('nip')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="nama" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama', $pegawai->nama) }}" required>
+                                <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama') }}" placeholder="Masukkan Nama Lengkap" required>
                                 @error('nama')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+                                <input type="text" class="form-control @error('tempat_lahir') is-invalid @enderror" id="tempat_lahir" name="tempat_lahir" value="{{ old('tempat_lahir') }}" placeholder="Masukkan Tempat Lahir">
+                                @error('tempat_lahir')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                                <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}">
+                                @error('tanggal_lahir')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -196,46 +271,58 @@
                         </div>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label for="pangkat" class="form-label">Pangkat</label>
-                                <select name="pangkat" id="pangkat" class="form-select" required>
+                                <label for="pangkat" class="form-label">Pangkat <span class="text-danger">*</span></label>
+                                <select name="pangkat" id="pangkat" class="form-select @error('pangkat') is-invalid @enderror" required>
+                                    <option value="">-- Pilih Pangkat --</option>
                                     @foreach(config('pegawai.pangkat') as $pangkat)
-                                    <option value="{{ $pangkat }}" {{ $pegawai->pangkat == $pangkat ? 'selected' : '' }}>{{ $pangkat }}</option>
+                                    <option value="{{ $pangkat }}" {{ old('pangkat') == $pangkat ? 'selected' : '' }}>{{ $pangkat }}</option>
                                     @endforeach
                                 </select>
+                                @error('pangkat')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="golongan" class="form-label">Golongan</label>
-                                <select name="golongan" id="golongan" class="form-select" required>
+                                <label for="golongan" class="form-label">Golongan <span class="text-danger">*</span></label>
+                                <select name="golongan" id="golongan" class="form-select @error('golongan') is-invalid @enderror" required>
+                                    <option value="">-- Pilih Golongan --</option>
                                     @foreach(config('pegawai.golongan') as $golongan)
-                                    <option value="{{ $golongan }}" {{ $pegawai->golongan == $golongan ? 'selected' : '' }}>{{ $golongan }}</option>
+                                    <option value="{{ $golongan }}" {{ old('golongan') == $golongan ? 'selected' : '' }}>{{ $golongan }}</option>
                                     @endforeach
                                 </select>
+                                @error('golongan')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="jabatan" class="form-label">Jabatan</label>
-                                <input type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" value="{{ old('jabatan', $pegawai->jabatan) }}" placeholder="Contoh: Kepala Seksi">
+                                <label for="jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" value="{{ old('jabatan') }}" placeholder="Contoh: Kepala Seksi" required>
                                 @error('jabatan')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="jenis_asn" class="form-label">Jenis ASN</label>
-                                <select name="jenis_asn" id="jenis_asn" class="form-select" required>
+                                <label for="jenis_asn" class="form-label">Jenis ASN <span class="text-danger">*</span></label>
+                                <select name="jenis_asn" id="jenis_asn" class="form-select @error('jenis_asn') is-invalid @enderror" required>
+                                    <option value="">-- Pilih Jenis ASN --</option>
                                     @foreach(config('pegawai.jenis_asn') as $key => $label)
-                                    <option value="{{ $key }}" {{ $pegawai->jenis_asn == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                    <option value="{{ $key }}" {{ old('jenis_asn') == $key ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
+                                @error('jenis_asn')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="kategori_jabatanasn" class="form-label">Kategori Jabatan ASN</label>
-                                <input type="text" class="form-control @error('kategori_jabatanasn') is-invalid @enderror" id="kategori_jabatanasn" name="kategori_jabatanasn" value="{{ old('kategori_jabatanasn', $pegawai->kategori_jabatanasn) }}" placeholder="Contoh: Fungsional">
+                                <label for="kategori_jabatanasn" class="form-label">Kategori Jabatan ASN <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('kategori_jabatanasn') is-invalid @enderror" id="kategori_jabatanasn" name="kategori_jabatanasn" value="{{ old('kategori_jabatanasn') }}" placeholder="Contoh: Fungsional" required>
                                 @error('kategori_jabatanasn')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="tmt" class="form-label">TMT (Terhitung Mulai Tanggal)</label>
-                                <input type="date" class="form-control @error('tmt') is-invalid @enderror" id="tmt" name="tmt" value="{{ old('tmt', $pegawai->tmt) }}">
+                                <label for="tmt" class="form-label">TMT (Terhitung Mulai Tanggal) <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control @error('tmt') is-invalid @enderror" id="tmt" name="tmt" value="{{ old('tmt') }}" required>
                                 @error('tmt')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -248,22 +335,17 @@
                             Unit Kerja
                         </div>
                         <div class="mb-4">
-                            <label for="kode_unitkerja" class="form-label">
-                                Unit / Sub-Unit Kerja
-                                @if (auth()->check() && auth()->user()->is_admin == 2)
-                                    <span class="readonly-badge">READ ONLY</span>
-                                @endif
-                            </label>
-
+                            <label for="kode_unitkerja" class="form-label">Unit / Sub-Unit Kerja <span class="text-danger">*</span></label>
+                            
                             @if (auth()->check() && auth()->user()->is_admin == 1)
                                 <!-- Superadmin: Bisa memilih -->
-                                <select name="kode_unitkerja" id="kode_unitkerja" class="form-select select2 @error('kode_unitkerja') is-invalid @enderror">
+                                <select name="kode_unitkerja" id="kode_unitkerja" class="form-select select2 @error('kode_unitkerja') is-invalid @enderror" required>
                                     <option value="">-- Pilih Unit / Sub-Unit --</option>
                                     @foreach($unitKerjaGrouped as $unitName => $subs)
                                         <optgroup label="{{ $unitName }}">
                                             @foreach($subs as $row)
                                                 <option value="{{ $row->kode_unitkerja }}"
-                                                    {{ old('kode_unitkerja', $pegawai->kode_unitkerja) == $row->kode_unitkerja ? 'selected' : '' }}>
+                                                    {{ old('kode_unitkerja') == $row->kode_unitkerja ? 'selected' : '' }}>
                                                     {{ $row->sub_unitkerja }} — {{ $row->kode_unitkerja }}
                                                 </option>
                                             @endforeach
@@ -274,12 +356,16 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             @elseif (auth()->check() && auth()->user()->is_admin == 2)
-                                <!-- Admin biasa: Readonly -->
+                                <!-- Admin biasa: Otomatis menggunakan unit kerja admin (tidak dapat diubah) -->
                                 @php
-                                    $unit = $unitKerjaGrouped->flatten()->firstWhere('kode_unitkerja', $pegawai->kode_unitkerja);
+                                    $unit = $unitKerjaGrouped->flatten()->firstWhere('kode_unitkerja', auth()->user()->kode_unitkerja);
                                 @endphp
-                                <input type="text" class="form-control" value="{{ $unit->sub_unitkerja ?? 'Tidak diketahui' }} — {{ $pegawai->kode_unitkerja }}" readonly>
-                                <input type="hidden" name="kode_unitkerja" value="{{ $pegawai->kode_unitkerja }}">
+                                <input type="text" class="form-control bg-light" value="{{ $unit->sub_unitkerja ?? 'Tidak diketahui' }} — {{ auth()->user()->kode_unitkerja }}" readonly>
+                                <input type="hidden" name="kode_unitkerja" value="{{ auth()->user()->kode_unitkerja }}">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Unit kerja Anda (tidak dapat diubah)
+                                </small>
                             @endif
                         </div>
 
@@ -290,22 +376,22 @@
                         </div>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $pegawai->email) }}" placeholder="contoh@email.com">
+                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="contoh@email.com" required>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="no_hp" class="form-label">No. HP</label>
-                                <input type="text" class="form-control @error('no_hp') is-invalid @enderror" id="no_hp" name="no_hp" value="{{ old('no_hp', $pegawai->no_hp) }}" placeholder="08xxxxxxxxxx">
+                                <label for="no_hp" class="form-label">No. HP <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('no_hp') is-invalid @enderror" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" placeholder="08xxxxxxxxxx" required>
                                 @error('no_hp')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-12">
-                                <label for="alamat" class="form-label">Alamat Lengkap</label>
-                                <textarea class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap">{{ old('alamat', $pegawai->alamat) }}</textarea>
+                                <label for="alamat" class="form-label">Alamat Lengkap <span class="text-danger">*</span></label>
+                                <textarea class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap" required>{{ old('alamat') }}</textarea>
                                 @error('alamat')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -318,7 +404,7 @@
                                 <i class="bi bi-x-circle me-1"></i> Batal
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle me-1"></i> Simpan Perubahan
+                                <i class="bi bi-check-circle me-1"></i> Simpan Data
                             </button>
                         </div>
                     </form>

@@ -1,0 +1,106 @@
+/* ====== CARD ====== */
+.card {
+    border-radius: 14px;
+    background-color: #ffffff;
+}
+
+.card.shadow-sm {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ====== HEADER ====== */
+.card-body h3 {
+    letter-spacing: -0.3px;
+}
+
+/* ====== FORM SECTION ====== */
+.form-section {
+    margin-top: 2.5rem;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #344767;
+    margin-bottom: 1.25rem;
+    padding-bottom: .5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+/* ====== LABEL ====== */
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: .35rem;
+}
+
+/* ====== INPUT & SELECT ====== */
+.form-control,
+.form-select {
+    border-radius: 10px;
+    padding: .6rem .75rem;
+    border: 1px solid #dee2e6;
+    transition: all .25s ease;
+    font-size: .95rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 .2rem rgba(79, 70, 229, 0.15);
+}
+
+/* Readonly input */
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+/* ====== TEXTAREA ====== */
+textarea.form-control {
+    resize: vertical;
+}
+
+/* ====== BUTTON ====== */
+.btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    border: none;
+    border-radius: 10px;
+    padding: .6rem 1.75rem;
+    font-weight: 500;
+    transition: all .25s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+}
+
+.btn-outline-secondary {
+    border-radius: 10px;
+    padding: .6rem 1.5rem;
+}
+
+/* ====== ALERT ====== */
+.alert {
+    border-radius: 10px;
+    font-size: .95rem;
+}
+
+/* ====== ERROR MESSAGE ====== */
+.text-danger.small {
+    font-size: .8rem;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+    .btn-primary,
+    .btn-outline-secondary {
+        width: 100%;
+    }
+
+    .d-flex.justify-content-end {
+        flex-direction: column-reverse;
+        gap: .75rem;
+    }
+}

@@ -50,6 +50,7 @@
 @endphp
 
 {{-- Kartu Profil --}}
+
 <div class="card profile-card mb-4">
   <div class="profile-banner"></div>
   <div class="card-body profile-body">
