@@ -224,17 +224,26 @@
                         Tidak Bisa Daftar
                       </button>
                     @else
-                      <button type="button"
-                              class="btn btn-ikut btn-sm btn-daftar"
-                              @auth('pegawais') data-bs-toggle="modal" data-bs-target="#modalKonfirmasi" @endauth
-                              data-session-id="{{ $training->id }}"
-                              data-nama-pelatihan="{{ $training->nama_pelatihan }}"
-                              data-jenis="{{ $jenis }}"
-                              data-lokasi="{{ $lokasi }}"
-                              data-tanggal="{{ $rentangTanggal }}"
-                              aria-label="Daftar">
-                        <i class="bi bi-plus-circle"></i> Daftar
-                      </button>
+                      @auth('pegawais')
+                        <button type="button"
+                                class="btn btn-ikut btn-sm btn-daftar"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modalKonfirmasi"
+                                data-session-id="{{ $training->id }}"
+                                data-nama-pelatihan="{{ $training->nama_pelatihan }}"
+                                data-jenis="{{ $jenis }}"
+                                data-lokasi="{{ $lokasi }}"
+                                data-tanggal="{{ $rentangTanggal }}"
+                                aria-label="Daftar">
+                          <i class="bi bi-plus-circle"></i> Daftar
+                        </button>
+                      @else
+                        <button type="button"
+                                class="btn btn-ikut btn-sm btn-daftar-guest"
+                                aria-label="Daftar">
+                          <i class="bi bi-plus-circle"></i> Daftar
+                        </button>
+                      @endauth
                     @endif
                   </div>
                 </div>
@@ -328,6 +337,91 @@
 @endsection
 
 @push('scripts')
+<script>
+  // Set authentication status and URLs
+  window.authPegawaisCheck = @json(auth('pegawais')->check());
+  window.loginUrl = "{{ route('Pegawai.login') }}";
+  window.joinRouteTemplate = "{{ url('/pelatihan/___ID___/join') }}";
+  
+  // Set kota list for dependent select
+  window.kotasList = @json($kotas ?? []);
+  
+  // Set flash messages
+  window.flashMessages = {
+    success: @json(session('success')),
+    error: @json(session('error')),
+    info: @json(session('info')),
+    warning: @json(session('warning'))
+  };
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('js/pelatihan-index.js') }}"></script>
+<script>
+  // Handle form submission
+  document.addEventListener('DOMContentLoaded', function() {
+    const formJoin = document.getElementById('formJoin');
+    if (formJoin) {
+      formJoin.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        // Disable submit button and show loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+        
+        // Get form data
+        const formData = new FormData(this);
+        const actionUrl = this.action;
+        
+        // Submit via fetch
+        fetch(actionUrl, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+          },
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Close modal
+            const modalEl = document.getElementById('modalKonfirmasi');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            
+            // Show success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Berhasil!',
+              text: data.message || 'Anda berhasil mendaftar pelatihan ini.',
+              confirmButtonText: 'OK',
+              confirmButtonColor: '#0d6efd'
+            }).then(() => {
+              window.location.reload();
+            });
+          } else {
+            throw new Error(data.message || 'Terjadi kesalahan');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: error.message || 'Terjadi kesalahan saat mendaftar.',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#d33'
+          });
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+        });
+      });
+    }
+  });
+</script>
 @endpush

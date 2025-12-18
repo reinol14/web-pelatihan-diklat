@@ -92,21 +92,21 @@ function setupDependentKotaSelect() {
  * Setup registration button handlers
  */
 function setupRegistrationHandlers() {
-  const isLoggedIn = window.authPegawaisCheck || false;
-  
+  // Handle guest (not logged in) registration button
   document.addEventListener('click', function (e) {
-    const btn = e.target.closest('.btn-daftar');
-    if (!btn) return;
-    
-    // Check if user is logged in
-    if (!isLoggedIn) {
+    const guestBtn = e.target.closest('.btn-daftar-guest');
+    if (guestBtn) {
       e.preventDefault();
       handleNotLoggedIn();
       return;
     }
     
-    // Fill modal with training data
-    fillModalData(btn);
+    // Handle logged in user registration button
+    const btn = e.target.closest('.btn-daftar');
+    if (btn) {
+      // Fill modal with training data
+      fillModalData(btn);
+    }
   });
 }
 

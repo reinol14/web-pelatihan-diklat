@@ -19,19 +19,31 @@ public function join(Request $request, $id)
 {
     $pegawai = Auth::guard('pegawais')->user();
     if (!$pegawai) {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Silakan login sebagai pegawai terlebih dahulu.'
+            ], 401);
+        }
         return redirect()
             ->route('pegawai.login', ['return_to' => url()->previous(), 'require_email' => 1])
             ->with('error', 'Silakan login sebagai pegawai terlebih dahulu.');
     }
 
-    return DB::transaction(function () use ($id, $pegawai) {
+    return DB::transaction(function () use ($id, $pegawai, $request) {
 
         // Kunci sesi
         $sesi = pbj_1_pelatihan::whereKey($id)->lockForUpdate()->first();
         if (!$sesi) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Pelatihan tidak tersedia.'], 404);
+            }
             return back()->with('error', 'Pelatihan tidak tersedia.');
         }
         if (($sesi->status ?? '') !== 'aktif') {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Pendaftaran ditutup.'], 400);
+            }
             return back()->with('warning', 'Pendaftaran ditutup.');
         }
 
@@ -41,6 +53,9 @@ public function join(Request $request, $id)
             $start  = Carbon::parse($sesi->tanggal_mulai)->startOfDay();
             $cutoff = $start->copy()->subDays(7);
             if ($today->greaterThanOrEqualTo($cutoff)) {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Pendaftaran ditutup mulai H-7 sebelum pelatihan dimulai.'], 400);
+                }
                 return back()->with('warning', 'Pendaftaran ditutup mulai H-7 sebelum pelatihan dimulai.');
             }
         }
@@ -58,20 +73,32 @@ public function join(Request $request, $id)
 
         // Jika masih ada pendaftaran aktif pada sesi ini → jangan buat baru
         if ($last && in_array($last->status, $activeStatuses, true)) {
+            $message = '';
             switch ($last->status) {
                 case 'menunggu':
-                    return back()->with('info', 'Permohonan Anda sudah dikirim dan sedang menunggu verifikasi.');
+                    $message = 'Permohonan Anda sudah dikirim dan sedang menunggu verifikasi.';
+                    break;
                 case 'diterima':
-                    return back()->with('info', 'Anda sudah diterima pada pelatihan ini.');
+                    $message = 'Anda sudah diterima pada pelatihan ini.';
+                    break;
                 case 'berjalan':
-                    return back()->with('info', 'Pelatihan ini sedang Anda ikuti.');
+                    $message = 'Pelatihan ini sedang Anda ikuti.';
+                    break;
                 case 'menunggu_laporan':
-                    return back()->with('info', 'Pelatihan selesai, silakan unggah laporan.');
+                    $message = 'Pelatihan selesai, silakan unggah laporan.';
+                    break;
             }
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 400);
+            }
+            return back()->with('info', $message);
         }
 
         // Jika attempt terakhir sudah lulus / tidak_lulus → kebijakan: blok daftar ulang
         if ($last && in_array($last->status, ['lulus','tidak_lulus'], true)) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Anda sudah menyelesaikan pelatihan ini. Tidak dapat mendaftar ulang.'], 400);
+            }
             return back()->with('info', 'Anda sudah menyelesaikan pelatihan ini. Tidak dapat mendaftar ulang.');
         }
 
@@ -97,6 +124,9 @@ public function join(Request $request, $id)
                 ->exists();
 
             if ($hasOverlapBlocking) {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Jadwal bertumpuk dengan pelatihan lain yang sudah diterima/berjalan.'], 400);
+                }
                 return back()->with('warning', 'Jadwal bertumpuk dengan pelatihan lain yang sudah diterima/berjalan.');
             }
         }
@@ -110,6 +140,9 @@ public function join(Request $request, $id)
                 ->count();
 
             if ($terpakai >= $kuota) {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Kuota sudah penuh. Pendaftaran tidak dapat diproses.'], 400);
+                }
                 return back()->with('error', 'Kuota sudah penuh. Pendaftaran tidak dapat diproses.');
             }
         }
@@ -126,6 +159,12 @@ public function join(Request $request, $id)
             'status'       => 'menunggu',
         ]);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Permohonan pendaftaran terkirim. Menunggu verifikasi admin.'
+            ]);
+        }
         return back()->with('success', 'Permohonan pendaftaran terkirim. Menunggu verifikasi admin.');
     });
 }

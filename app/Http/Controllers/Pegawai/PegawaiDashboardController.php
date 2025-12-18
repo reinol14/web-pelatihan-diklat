@@ -25,7 +25,7 @@ public function index()
     $atasan = $pegawai?->atasan;
 
     if (!$nip) {
-        return view('pegawai.dashboard', [
+        return view('Pegawai.dashboard', [
             'pegawai' => $pegawai,
             'atasan'  => $atasan,
             'ongoing' => collect(),
@@ -155,7 +155,7 @@ public function index()
         'perlu_laporan_count' => $perluLaporanCount,
     ];
 
-    return view('pegawai.dashboard', compact('pegawai','atasan','ongoing','history','stats'));
+    return view('Pegawai.dashboard', compact('pegawai','atasan','ongoing','history','stats'));
 }
 
 
@@ -170,7 +170,7 @@ public function index()
             'atasan.unitKerja:kode_unitkerja,unitkerja,sub_unitkerja',
         ]);
 
-        return view('pegawai.profil.index', [
+        return view('Pegawai.profil.index', [
             'pegawai' => $pegawai,
             'atasan'  => $pegawai->atasan,
         ]);
