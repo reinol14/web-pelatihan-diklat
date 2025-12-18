@@ -171,17 +171,23 @@ public function join(Request $request, $id)
 
 
 // Batalkan (leave) — ubah ke "dibatalkan" bila masih menunggu/diterima
-public function leave($id)
+public function leave(Request $request, $id)
 {
     $pegawai = Auth::guard('pegawais')->user();
     if (!$pegawai) {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Silakan login sebagai pegawai terlebih dahulu.'
+            ], 401);
+        }
         return redirect()
             ->route('pegawai.login', ['return_to' => url()->current()])
             ->with('error', 'Silakan login sebagai pegawai terlebih dahulu.');
     }
 
-    return DB::transaction(function () use ($id, $pegawai) {
-        // Kunci baris yang relevan (status yang boleh dibatalkan)
+    return DB::transaction(function () use ($id, $pegawai, $request) {
+        // Kunci baris yang relevan (status yang boleh dibatalkan: menunggu atau diterima)
         $row = DB::table('peserta_pelatihan')
             ->where('pelatihan_id', $id)
             ->where('nip', $pegawai->nip)
@@ -190,6 +196,12 @@ public function leave($id)
             ->first();
 
         if (!$row) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pelatihan tidak dapat dibatalkan dalam status ini.'
+                ], 400);
+            }
             return back()->with('info', 'Pelatihan tidak dapat dibatalkan dalam status ini.');
         }
 
@@ -202,6 +214,12 @@ public function leave($id)
                 'updated_at' => now(),
             ]);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengajuan/pendaftaran berhasil dibatalkan.'
+            ]);
+        }
         return back()->with('success', 'Pengajuan/pendaftaran berhasil dibatalkan.');
     });
 }
