@@ -3,80 +3,6 @@
 @section('title', 'Manajemen Data Pegawai')
 
 @section('content')
-<style>
-    @media (max-width: 768px) {
-        .container {
-            padding: 1rem !important;
-        }
-        
-        h1 {
-            font-size: 1.5rem !important;
-            margin-bottom: 1rem !important;
-        }
-        
-        .column-check {
-            display: none;
-        }
-        
-        .d-flex.gap-3 {
-            flex-direction: column;
-            gap: 0.5rem !important;
-            width: 100%;
-        }
-        
-        .d-flex.gap-3 .btn {
-            width: 100%;
-        }
-        
-        .card {
-            border-radius: 0.5rem;
-        }
-        
-        .table {
-            font-size: 0.75rem;
-        }
-        
-        .table th,
-        .table td {
-            padding: 0.5rem 0.25rem;
-            white-space: nowrap;
-        }
-        
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-        
-        .btn-sm i {
-            font-size: 0.75rem;
-        }
-    }
-    
-    @media (max-width: 576px) {
-        h1 {
-            font-size: 1.25rem !important;
-        }
-        
-        .input-group {
-            margin-bottom: 0.75rem;
-        }
-        
-        .table {
-            font-size: 0.7rem;
-        }
-        
-        .table th,
-        .table td {
-            padding: 0.4rem 0.2rem;
-        }
-        
-        /* Make action buttons stack vertically on very small screens */
-        .dropdown-menu {
-            font-size: 0.8rem;
-        }
-    }
-</style>
-
 <div class="container py-4">
     <h1 class="text-center text-primary fw-bold mb-4">Manajemen Data Pegawai</h1>
 
@@ -93,7 +19,7 @@
     <!-- Filter Kolom dan Tombol Navigasi -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <!-- Filter Kolom -->
-        <div class="d-none d-md-block">
+        <div>
             <strong class="text-muted">Tampilkan Kolom:</strong>
             @php
                 $columns = [
@@ -118,10 +44,10 @@
         <!-- Tombol Navigasi -->
         <div class="d-flex gap-3 align-items-center">
             <a href="{{ route('checkDuplicates') }}" class="btn btn-danger btn-sm shadow-sm">
-                <i class="fa fa-layer-group"></i> <span class="d-none d-sm-inline">Cek</span> Duplikasi
+                <i class="fa fa-layer-group"></i> Cek Duplikasi
             </a>
             <a href="{{ route('Admin.Pegawai.create') }}" class="btn btn-primary btn-sm shadow-sm">
-                <i class="fa fa-plus-circle"></i> Tambah <span class="d-none d-sm-inline">Data Pegawai</span>
+                <i class="fa fa-plus-circle"></i> Tambah Data Pegawai
             </a>
         </div>
     </div>

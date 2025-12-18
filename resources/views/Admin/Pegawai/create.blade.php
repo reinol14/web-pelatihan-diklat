@@ -109,87 +109,11 @@
     }
     @media (max-width: 768px) {
         .form-header {
-            padding: 1.5rem 1rem;
-        }
-        .form-header h3 {
-            font-size: 1.25rem;
-        }
-        .form-header p {
-            font-size: 0.875rem;
-        }
-        .card-body {
-            padding: 1.5rem 1rem !important;
-        }
-        .section-title {
-            font-size: 1rem;
-        }
-        .form-label {
-            font-size: 0.875rem;
-        }
-        .form-control, .form-select {
-            font-size: 0.875rem;
-            padding: 0.5rem 0.75rem;
+            padding: 1.5rem;
         }
         .btn-primary, .btn-secondary {
             width: 100%;
             margin-bottom: 0.5rem;
-        }
-        .profile-upload-wrapper {
-            width: 120px;
-            height: 120px;
-        }
-        .profile-preview {
-            width: 120px;
-            height: 120px;
-        }
-        .upload-overlay {
-            width: 120px;
-            height: 120px;
-        }
-        .upload-overlay i {
-            font-size: 24px;
-        }
-        /* Stack form groups vertically on mobile */
-        .row.mb-3 {
-            margin-bottom: 0.75rem !important;
-        }
-        .col-md-6 {
-            margin-bottom: 0.75rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .form-header {
-            padding: 1.25rem 0.875rem;
-        }
-        .form-header h3 {
-            font-size: 1.1rem;
-        }
-        .card-body {
-            padding: 1.25rem 0.875rem !important;
-        }
-        .section-divider {
-            margin: 1.5rem 0 1rem 0;
-        }
-        .section-title {
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
-        }
-        .profile-upload-wrapper {
-            width: 100px;
-            height: 100px;
-        }
-        .profile-preview {
-            width: 100px;
-            height: 100px;
-        }
-        .upload-overlay {
-            width: 100px;
-            height: 100px;
-        }
-        .btn-primary, .btn-secondary {
-            padding: 0.5rem 1.5rem;
-            font-size: 0.875rem;
         }
     }
 </style>

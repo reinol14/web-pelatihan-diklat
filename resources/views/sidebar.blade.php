@@ -73,7 +73,6 @@
     document.addEventListener("DOMContentLoaded", function() {
         const sidebar = document.querySelector(".sidebar");
         const toggleButton = document.querySelector("#sidebarToggle");
-        const mobileSidebarToggle = document.querySelector("#mobileSidebarToggle");
         const mainContainer = document.querySelector(".main-container");
         const dropdowns = document.querySelectorAll(".has-dropdown .menu-title");
 
@@ -90,38 +89,6 @@
             }
         }
 
-        // Mobile sidebar overlay
-        function createOverlay() {
-            if (!document.querySelector('.sidebar-overlay')) {
-                const overlay = document.createElement('div');
-                overlay.className = 'sidebar-overlay';
-                document.body.appendChild(overlay);
-                
-                overlay.addEventListener('click', function() {
-                    sidebar.classList.remove('show-mobile');
-                    overlay.classList.remove('show');
-                    document.body.style.overflow = '';
-                });
-            }
-        }
-
-        // Mobile toggle handler
-        if (mobileSidebarToggle) {
-            createOverlay();
-            mobileSidebarToggle.addEventListener("click", function(e) {
-                e.stopPropagation();
-                sidebar.classList.toggle("show-mobile");
-                const overlay = document.querySelector('.sidebar-overlay');
-                overlay.classList.toggle('show');
-                
-                if (sidebar.classList.contains('show-mobile')) {
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = '';
-                }
-            });
-        }
-
         // Toggle sidebar expanded/collapsed state
         if (toggleButton) {
             toggleButton.addEventListener("click", function() {
@@ -130,7 +97,7 @@
                     mainContainer.classList.toggle("expanded");
                 }
                 initTooltips();
-                document.body.classList.toggle("sidebar-closed");
+                document.body.classList.toggle("sidebar-closed"); // Add class to body for header adjustment
             });
         }
 
@@ -148,31 +115,9 @@
                     }
                     setTimeout(() => {
                         parent.classList.toggle("show");
-                    }, 300);
+                    }, 300); // Wait for sidebar animation to complete
                 } else {
                     // If already expanded, just toggle the dropdown
-                    parent.classList.toggle("show");
-                }
-            });
-        });
-
-        // Close mobile sidebar when clicking menu item
-        const menuLinks = document.querySelectorAll('.sidebar .menu-item a');
-        menuLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                if (window.innerWidth <= 768 && sidebar.classList.contains('show-mobile')) {
-                    sidebar.classList.remove('show-mobile');
-                    const overlay = document.querySelector('.sidebar-overlay');
-                    if (overlay) overlay.classList.remove('show');
-                    document.body.style.overflow = '';
-                }
-            });
-        });
-
-        // Initialize on load
-        initTooltips();
-    });
-</script>
                     parent.classList.toggle("show");
                 }
 
@@ -446,49 +391,43 @@
     /* Responsive */
     @media (max-width: 768px) {
         .sidebar {
-            position: fixed;
-            left: -250px;
-            width: 250px;
-            z-index: 1050;
-            transition: left 0.3s ease;
+            width: 60px;
         }
 
-        .sidebar.show-mobile {
-            left: 0;
-        }
-
-        .sidebar .toggle-btn {
+        .sidebar .menu-text,
+        .sidebar .menu-header,
+        .sidebar .dropdown-icon {
             display: none;
         }
 
-        .main-container {
-            margin-left: 0 !important;
-            width: 100% !important;
-        }
-
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .sidebar .menu-item i {
+            margin-right: 0;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1040;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            text-align: center;
         }
 
-        .sidebar-overlay.show {
-            opacity: 1;
-            visibility: visible;
+        .sidebar .menu-item a,
+        .sidebar .menu-title {
+            padding: 15px 0;
+            justify-content: center;
         }
 
-        /* Show all menu text on mobile when sidebar is open */
+        .sidebar .submenu {
+            display: none !important;
+        }
+
+        .main-container {
+            margin-left: 60px;
+        }
+
+        .sidebar.show-mobile {
+            width: 250px;
+        }
+
         .sidebar.show-mobile .menu-text,
         .sidebar.show-mobile .menu-header,
         .sidebar.show-mobile .dropdown-icon {
-            display: block !important;
+            display: block;
         }
 
         .sidebar.show-mobile .menu-item i {
@@ -505,12 +444,6 @@
 
         .sidebar.show-mobile .has-dropdown.show .submenu {
             display: block !important;
-        }
-    }
-
-    @media (min-width: 769px) {
-        .sidebar-overlay {
-            display: none !important;
         }
     }
 </style>
