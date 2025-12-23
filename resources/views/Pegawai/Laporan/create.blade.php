@@ -14,7 +14,7 @@
 
 <section class="hero py-3">
   <div class="container">
-    <a href="{{ route('pegawai.laporan.index') }}" class="text-decoration-none">&larr; Kembali ke daftar laporan</a>
+    <a href="{{ route('Pegawai.laporan.index') }}" class="text-decoration-none">&larr; Kembali ke daftar laporan</a>
   </div>
 </section>
 
@@ -42,7 +42,7 @@
     <div class="row g-3 g-lg-4">
       <div class="col-lg-7">
         <div class="cardish p-3 p-md-4">
-          <form method="POST" action="{{ route('pegawai.laporan.store', $sesi->id) }}" enctype="multipart/form-data" class="needs-validation" novalidate>
+          <form method="POST" action="{{ route('Pegawai.laporan.store', $sesi->id) }}" enctype="multipart/form-data" class="needs-validation" novalidate>
             @csrf
 
             <div class="mb-3">
@@ -69,7 +69,7 @@
             </div>
 
             <div class="d-flex gap-2">
-              <a href="{{ route('pegawai.laporan.index') }}" class="btn btn-outline-secondary">Batal</a>
+              <a href="{{ route('Pegawai.laporan.index') }}" class="btn btn-outline-secondary">Batal</a>
               <button type="submit" class="btn btn-primary">
                 <i class="bi bi-upload me-1"></i> Kirim Laporan
               </button>
