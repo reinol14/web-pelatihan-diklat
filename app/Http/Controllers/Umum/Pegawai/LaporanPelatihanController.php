@@ -51,7 +51,7 @@ class LaporanPelatihanController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('Pegawai.laporan.index', compact('items', 'today'));
+        return view('Pegawai.Laporan.index', compact('items', 'today'));
     }
 
     public function create($id)
