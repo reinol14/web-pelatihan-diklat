@@ -63,7 +63,7 @@ Route::middleware(['auth:pegawais'])->group(function () {
     Route::post('/pelatihan/{id}/join',  [PelatihanPendaftaranController::class, 'join'])->name('pelatihan.join');
     Route::post('/pelatihan/{id}/leave', [PelatihanPendaftaranController::class, 'leave'])->name('pelatihan.leave');
 
-    Route::prefix('pegawai')->name('Pegawai.')->group(function () {
+    Route::prefix('Pegawai')->name('Pegawai.')->group(function () {
     // Laporan Pelatihan (menu pegawai, berdiri sendiri)
     Route::get('/laporan',            [LaporanPelatihanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/{id}/buat',  [LaporanPelatihanController::class, 'create'])->name('laporan.create');
