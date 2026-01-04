@@ -89,18 +89,18 @@ class LaporanPelatihanController extends Controller
         if ($last) {
             if ($last->status === 'rejected') {
                 return redirect()
-                    ->route('Pegawai.laporan.edit', $last->id)
+                    ->route('Pegawai.Laporan.edit', $last->id)
                     ->with('info', 'Perbaiki laporan yang ditolak lalu kirim ulang.');
             }
             if ($last->status === 'pending') {
-                return redirect()->route('Pegawai.laporan.index')->with('info', 'Laporan sudah diajukan dan menunggu verifikasi.');
+                return redirect()->route('Pegawai.Laporan.index')->with('info', 'Laporan sudah diajukan dan menunggu verifikasi.');
             }
             if ($last->status === 'approved') {
-                return redirect()->route('Pegawai.laporan.index')->with('info', 'Laporan sudah disetujui.');
+                return redirect()->route('Pegawai.Laporan.index')->with('info', 'Laporan sudah disetujui.');
             }
         }
 
-        return view('Pegawai.laporan.create', compact('sesi'));
+        return view('Pegawai.Laporan.create', compact('sesi'));
     }
 
 public function store(Request $request, $id)
@@ -144,7 +144,7 @@ public function store(Request $request, $id)
         ->orderByDesc('id')
         ->first();
     if ($last) {
-        return redirect()->route('Pegawai.laporan.create', $id);
+        return redirect()->route('Pegawai.Laporan.create', $id);
     }
 
     // simpan lampiran laporan (opsional) ke kolom file_path
@@ -177,7 +177,7 @@ public function store(Request $request, $id)
         'updated_at'   => now(),
     ]);
 
-    return redirect()->route('Pegawai.laporan.index')
+    return redirect()->route('Pegawai.Laporan.index')
         ->with('success', 'Laporan & sertifikat berhasil dikirim. Menunggu verifikasi.');
 }
 
@@ -192,7 +192,7 @@ public function store(Request $request, $id)
 
         $sesi = DB::table('pbj_1_pelatihans')->where('id', $laporan->pelatihan_id)->first();
 
-        return view('Pegawai.laporan.edit', [
+        return view('Pegawai.Laporan.edit', [
             'sesi'    => $sesi,
             'laporan' => $laporan,
         ]);
@@ -246,7 +246,7 @@ public function update(Request $request, $laporanId)
         'updated_at'  => now(),
     ]);
 
-    return redirect()->route('Pegawai.laporan.index')
+    return redirect()->route('Pegawai.Laporan.index')
         ->with('success', 'Perbaikan terkirim. Menunggu verifikasi.');
 }
 
