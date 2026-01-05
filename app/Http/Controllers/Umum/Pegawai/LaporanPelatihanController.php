@@ -51,7 +51,7 @@ class LaporanPelatihanController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('Pegawai.laporan.index', compact('items', 'today'));
+        return view('Pegawai.Laporan.index', compact('items', 'today'));
     }
 
     public function create($id)
@@ -93,10 +93,10 @@ class LaporanPelatihanController extends Controller
                     ->with('info', 'Perbaiki laporan yang ditolak lalu kirim ulang.');
             }
             if ($last->status === 'pending') {
-                return redirect()->route('Pegawai.laporan.index')->with('info', 'Laporan sudah diajukan dan menunggu verifikasi.');
+                return redirect()->route('Pegawai.Laporan.index')->with('info', 'Laporan sudah diajukan dan menunggu verifikasi.');
             }
             if ($last->status === 'approved') {
-                return redirect()->route('Pegawai.laporan.index')->with('info', 'Laporan sudah disetujui.');
+                return redirect()->route('Pegawai.Laporan.index')->with('info', 'Laporan sudah disetujui.');
             }
         }
 
@@ -177,7 +177,7 @@ public function store(Request $request, $id)
         'updated_at'   => now(),
     ]);
 
-    return redirect()->route('Pegawai.laporan.index')
+    return redirect()->route('Pegawai.Laporan.index')
         ->with('success', 'Laporan & sertifikat berhasil dikirim. Menunggu verifikasi.');
 }
 
@@ -246,7 +246,7 @@ public function update(Request $request, $laporanId)
         'updated_at'  => now(),
     ]);
 
-    return redirect()->route('Pegawai.laporan.index')
+    return redirect()->route('Pegawai.Laporan.index')
         ->with('success', 'Perbaikan terkirim. Menunggu verifikasi.');
 }
 
