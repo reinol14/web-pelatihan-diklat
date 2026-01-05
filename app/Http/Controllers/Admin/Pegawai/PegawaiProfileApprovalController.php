@@ -34,13 +34,13 @@ class PegawaiProfileApprovalController extends Controller
             'rejected' => PegawaiProfileChange::where('status','rejected')->count(),
         ];
 
-        return view('admin.pegawai_profile.index', compact('items','counts','status','q'));
+        return view('Admin.pegawai_profile.index', compact('items','counts','status','q'));
     }
 
     public function show($id)
     {
         $item = PegawaiProfileChange::with('pegawai')->findOrFail($id);
-        return view('admin.pegawai_profile.show', compact('item'));
+        return view('Admin.pegawai_profile.show', compact('item'));
     }
 
 public function approve(Request $request, $id)
