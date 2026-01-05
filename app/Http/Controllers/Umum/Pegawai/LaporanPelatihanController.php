@@ -93,10 +93,10 @@ class LaporanPelatihanController extends Controller
                     ->with('info', 'Perbaiki laporan yang ditolak lalu kirim ulang.');
             }
             if ($last->status === 'pending') {
-                return redirect()->route('Pegawai.Laporan.index')->with('info', 'Laporan sudah diajukan dan menunggu verifikasi.');
+                return redirect()->route('Pegawai.laporan.index')->with('info', 'Laporan sudah diajukan dan menunggu verifikasi.');
             }
             if ($last->status === 'approved') {
-                return redirect()->route('Pegawai.Laporan.index')->with('info', 'Laporan sudah disetujui.');
+                return redirect()->route('Pegawai.laporan.index')->with('info', 'Laporan sudah disetujui.');
             }
         }
 
