@@ -39,7 +39,7 @@ class PelatihanVerifikasiController extends Controller
             ->groupBy('pelatihan_id')
             ->pluck('used', 'pelatihan_id');
 
-        return view('admin.pelatihan.verifikasi', compact('pesertas', 'sessions', 'status', 'q', 'sesiId', 'terpakaiMap'));
+        return view('Admin.Pelatihan.verifikasi', compact('pesertas', 'sessions', 'status', 'q', 'sesiId', 'terpakaiMap'));
     }
 
     public function approve($pelatihan, $nip)
@@ -95,7 +95,7 @@ class PelatihanVerifikasiController extends Controller
 
             // Tips UX: setelah approve, otomatis pindahkan filter ke "diterima"
             return redirect()
-                ->route('admin.pelatihan.verifikasi', ['status' => 'diterima'])
+                ->route('Admin.Pelatihan.verifikasi', ['status' => 'diterima'])
                 ->with('success', $msg);
 
         } catch (\Throwable $e) {
