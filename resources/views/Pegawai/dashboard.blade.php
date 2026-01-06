@@ -186,7 +186,6 @@
               <tr>
                 <th>Pelatihan</th>
                 <th>Periode</th>
-                <th>File Pelatihan</th>
                 <th>Sertifikat</th>
                 <th>Status</th>
               </tr>
@@ -207,15 +206,7 @@
                 <tr>
                   <td>{{ $sesi?->nama_pelatihan ?? '-' }}</td>
                   <td>{{ $mulai }} – {{ $selesai }}</td>
-                  <td>
-                      @if($fileUrl)
-                        <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-success">
-                          <i class="bi bi-file-earmark-text me-1"></i> Lampiran
-                        </a>
-                      @else
-                        <span class="text-muted">-</span>
-                      @endif
-                  </td>
+                  
                   <td>
                       @if($sertifikat)
                         <a href="{{ $sertifikat }}" target="_blank" class="btn btn-sm btn-outline-success">
