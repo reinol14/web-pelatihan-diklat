@@ -36,13 +36,13 @@
 
   // Action & method form
   $action = $mode === 'edit'
-      ? route('pegawai.laporan.update', $laporan->id)
-      : route('pegawai.laporan.store',  $sesi->id);
+      ? route('Pegawai.Laporan.update', $laporan->id)
+      : route('Pegawai.Laporan.store',  $sesi->id);
 @endphp
 
 <section class="hero py-3">
   <div class="container">
-    <a href="{{ route('pegawai.laporan.index') }}" class="text-decoration-none">&larr; Kembali ke daftar laporan</a>
+    <a href="{{ route('Pegawai.Laporan.index') }}" class="text-decoration-none">&larr; Kembali ke daftar laporan</a>
   </div>
 </section>
 
@@ -115,7 +115,7 @@
             </div>
 
             <div class="d-flex gap-2">
-              <a href="{{ route('pegawai.laporan.index') }}" class="btn btn-outline-secondary">Batal</a>
+              <a href="{{ route('Pegawai.Laporan.index') }}" class="btn btn-outline-secondary">Batal</a>
               <button type="submit" class="btn btn-primary">
                 <i class="bi bi-upload me-1"></i>
                 {{ $mode === 'edit' ? 'Simpan Perbaikan & Kirim Ulang' : 'Kirim Laporan' }}

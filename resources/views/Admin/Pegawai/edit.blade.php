@@ -187,7 +187,21 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Tempat Lahir</label>
+                                <input type="text" name="tempat_lahir" class="form-control" value="{{ old('tempat_lahir', $pegawai->tempat_lahir) }}">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Tanggal Lahir</label>
+                                <input 
+                                    type="date" 
+                                    name="tanggal_lahir" 
+                                    class="form-control" 
+                                    value="{{ old('tanggal_lahir', $pegawai->tanggal_lahir ? date('Y-m-d', strtotime($pegawai->tanggal_lahir)) : '') }}">
+                            </div>
                         </div>
+                        
 
                         <!-- Data Kepegawaian -->
                         <div class="section-title">
@@ -234,11 +248,12 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="tmt" class="form-label">TMT (Terhitung Mulai Tanggal)</label>
-                                <input type="date" class="form-control @error('tmt') is-invalid @enderror" id="tmt" name="tmt" value="{{ old('tmt', $pegawai->tmt) }}">
-                                @error('tmt')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <label class="form-label fw-semibold">TMT (Terhitung Mulai Tanggal)</label>
+                                <input 
+                                    type="date" 
+                                    name="tmt" 
+                                    class="form-control" 
+                                    value="{{ old('tmt', $pegawai->tmt ? date('Y-m-d', strtotime($pegawai->tmt)) : '') }}">
                             </div>
                         </div>
 

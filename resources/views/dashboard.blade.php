@@ -399,7 +399,7 @@
       ];
       
       // Tambahkan card Total Pelatihan hanya untuk superadmin
-      if ($isSuperAdmin && Route::has('Admin.pelatihan.index')) {
+      if ($isSuperAdmin && Route::has('Admin.Pelatihan.index')) {
         $cards[] = [
           'title'=>'Total Pelatihan',
           'value'=>number_format($pelatihanTotal),
@@ -408,7 +408,7 @@
           'icon-class'=>'calendar-event-fill',
           'bg'  =>'bg-danger',
           'sub' =>'Aktif: '.number_format($pelatihanDapatDiakses).' • Ditutup: '.number_format($pelatihanTertutup),
-          'link'=> route('Admin.pelatihan.index'),
+          'link'=> route('Admin.Pelatihan.index'),
           'show' => true,
         ];
       }
@@ -493,7 +493,7 @@
 
   {{-- ====== ROW: KALENDER & ACTION CENTER ====== --}}
   <div class="row mt-4">
-    @if($isSuperAdmin && Route::has('Admin.pelatihan.index'))
+    @if($isSuperAdmin && Route::has('Admin.Pelatihan.index'))
     <div class="col-lg-8 mb-4">
       <div class="modern-container">
         <div class="modern-container-header">
@@ -505,7 +505,7 @@
                 <small class="text-muted">30 hari ke depan</small>
               </div>
             </div>
-            <a href="{{ route('Admin.pelatihan.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+            <a href="{{ route('Admin.Pelatihan.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
               <span>Lihat Semua</span>
               <i class="bi bi-arrow-right ms-1"></i>
             </a>
@@ -604,7 +604,7 @@
                 <small class="text-muted">Perlu ditinjau</small>
               </div>
             </div>
-            <a class="action-badge text-decoration-none" href="{{ route('Admin.pelatihan.index',[],false) ?? '#' }}" style="background: var(--info-gradient);">
+            <a class="action-badge text-decoration-none" href="{{ route('Admin.Pelatihan.index',[],false) ?? '#' }}" style="background: var(--info-gradient);">
               {{ $ac['laporan_pending'] }}
             </a>
           </div>

@@ -44,8 +44,8 @@
         <th>Pelatihan</th>
         <th>Judul Laporan</th>
         <th>Lampiran</th>
+        <th>Sertifikat</th>
         <th>Status</th>
-        <th>Dikirim</th>
         <th class="text-end">Aksi</th>
       </tr>
       </thead>
@@ -54,6 +54,7 @@
         @php
           $badge = $row->status==='pending' ? 'warning' : ($row->status==='approved' ? 'success' : 'secondary');
           $fileUrl = $row->file_path ? ( \Illuminate\Support\Str::startsWith($row->file_path,'storage/') ? asset($row->file_path) : asset('storage/'.ltrim($row->file_path,'/')) ) : null;
+          $sertifikat = $row->sertifikat ? ( \Illuminate\Support\Str::startsWith($row->sertifikat,'storage/') ? asset($row->sertifikat) : asset('storage/'.ltrim($row->sertifikat,'/')) ) : null;
         @endphp
         <tr>
           <td>{{ ($items->firstItem() ?? 1) + $loop->index }}</td>
@@ -73,12 +74,19 @@
             @endif
           </td>
           <td>
+            @if($sertifikat)
+              <a href="{{ $sertifikat }}" target="_blank" class="btn btn-sm btn-outline-success">
+                <i class="bi bi-file-earmark-text me-1"></i> Sertifikat
+              </a>
+            @else
+              <span class="text-muted">-</span>
+            @endif
+          </td>
+          <td>
             <span class="badge text-bg-{{ $badge }}">{{ ucfirst($row->status) }}</span>
             @if($row->keterangan)
               <div class="small text-muted mt-1">Catatan: {{ $row->keterangan }}</div>
             @endif
-          </td>
-          <td>{{ optional($row->created_at)->format('d M Y H:i') }}</td>
 
           <td class="text-end">
             @if($row->status === 'pending')

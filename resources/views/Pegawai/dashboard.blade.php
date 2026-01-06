@@ -89,7 +89,7 @@
   <div class="card mb-4">
     <div class="card-header bg-white d-flex align-items-center justify-content-between">
       <strong>Status Pelatihan</strong>
-      <a href="{{ route('Pegawai.laporan.index') }}" class="btn btn-sm btn-outline-primary">
+      <a href="{{ route('Pegawai.Laporan.index') }}" class="btn btn-sm btn-outline-primary">
         <i class="bi bi-list-task me-1"></i> Lihat Semua
       </a>
     </div>
@@ -144,7 +144,7 @@
 
                     {{-- Ajukan laporan saat menunggu_laporan (atau kalau 'berjalan' tapi sudah lewat tanggal selesai) --}}
                     @if($sesiId && ($st === 'menunggu_laporan' || ($st === 'berjalan' && $sudahSelesai)))
-                      <a href="{{ route('Pegawai.laporan.create', ['id' => $sesiId]) }}"
+                      <a href="{{ route('Pegawai.Laporan.create', ['id' => $sesiId]) }}"
                          class="btn btn-sm btn-outline-success" title="Ajukan Laporan">
                         <i class="bi bi-journal-text"></i>
                       </a>
@@ -186,7 +186,7 @@
               <tr>
                 <th>Pelatihan</th>
                 <th>Periode</th>
-                <th>Hasil</th>
+                <th>File Pelatihan</th>
                 <th>Sertifikat</th>
                 <th>Status</th>
               </tr>
@@ -199,20 +199,31 @@
                   $selesai = $sesi?->tanggal_selesai ? \Illuminate\Support\Carbon::parse($sesi->tanggal_selesai)->isoFormat('D MMM Y') : '-';
                   $st      = $row->status;
                   $map     = $statusMap[$st] ?? ['label' => $st, 'class' => 'light'];
+                  
+                  $fileUrl = $row->file_path ? ( \Illuminate\Support\Str::startsWith($row->file_path,'storage/') ? asset($row->file_path) : asset('storage/'.ltrim($row->file_path,'/')) ) : null;
+                  $sertifikat = $row->sertifikat ? ( \Illuminate\Support\Str::startsWith($row->sertifikat,'storage/') ? asset($row->sertifikat) : asset('storage/'.ltrim($row->sertifikat,'/')) ) : null;
+        
                 @endphp
                 <tr>
                   <td>{{ $sesi?->nama_pelatihan ?? '-' }}</td>
                   <td>{{ $mulai }} – {{ $selesai }}</td>
-                  <td>{{ $row->hasil_pelatihan ?? '-' }}</td>
                   <td>
-                    @if(!empty($row->sertifikat))
-                      <a href="{{ asset('storage/'.ltrim($row->sertifikat,'/')) }}"
-                         target="_blank" class="btn btn-sm btn-outline-success">
-                        <i class="bi bi-award"></i> Unduh
-                      </a>
-                    @else
-                      <span class="text-muted">-</span>
-                    @endif
+                      @if($fileUrl)
+                        <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-success">
+                          <i class="bi bi-file-earmark-text me-1"></i> Lampiran
+                        </a>
+                      @else
+                        <span class="text-muted">-</span>
+                      @endif
+                  </td>
+                  <td>
+                      @if($sertifikat)
+                        <a href="{{ $sertifikat }}" target="_blank" class="btn btn-sm btn-outline-success">
+                          <i class="bi bi-file-earmark-text me-1"></i> Sertifikat
+                        </a>
+                      @else
+                        <span class="text-muted">-</span>
+                      @endif
                   </td>
                   <td>
                     <span class="badge text-bg-{{ $map['class'] }}">{{ $map['label'] }}</span>

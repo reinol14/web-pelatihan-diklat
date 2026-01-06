@@ -63,13 +63,14 @@ Route::middleware(['auth:pegawais'])->group(function () {
     Route::post('/pelatihan/{id}/join',  [PelatihanPendaftaranController::class, 'join'])->name('pelatihan.join');
     Route::post('/pelatihan/{id}/leave', [PelatihanPendaftaranController::class, 'leave'])->name('pelatihan.leave');
 
-    Route::prefix('Pegawai')->name('Pegawai.')->group(function () {
+    Route::prefix('Pegawai')->name('Pegawai.Laporan.')->group(function () {
     // Laporan Pelatihan (menu pegawai, berdiri sendiri)
-    Route::get('/laporan',            [LaporanPelatihanController::class, 'index'])->name('laporan.index');
-    Route::get('/laporan/{id}/buat',  [LaporanPelatihanController::class, 'create'])->name('laporan.create');
-    Route::post('/laporan/{id}',      [LaporanPelatihanController::class, 'store'])->name('laporan.store');
-    Route::get('pegawai/laporan/{laporan}/edit', [LaporanPelatihanController::class, 'edit'])->name('laporan.edit');
-Route::put('pegawai/laporan/{laporan}',      [LaporanPelatihanController::class, 'update'])->name('laporan.update');
+    Route::get('/laporan',            [LaporanPelatihanController::class, 'index'])->name('index');
+    Route::get('/laporan/{id}/buat',  [LaporanPelatihanController::class, 'create'])->name('create');
+    Route::post('/laporan/{id}',      [LaporanPelatihanController::class, 'store'])->name('store');
+    Route::get('pegawai/laporan/{laporan}/edit', [LaporanPelatihanController::class, 'edit'])->name('edit');
+Route::put('pegawai/laporan/{laporan}',      [LaporanPelatihanController::class, 'update'])->name('update');
+
 });
 
 });
@@ -98,7 +99,7 @@ Route::middleware([\App\Http\Middleware\SuperadminMiddleware::class])->group(fun
     Route::get('admin/pegawai/check-duplicates', [PegawaiController::class, 'checkDuplicates'])->name('checkDuplicates');
     
     // Admin CRUD for Pelatihan sessions (hanya superadmin)
-    Route::prefix('admin/pelatihan')->name('Admin.pelatihan.')->group(function() {
+    Route::prefix('admin/pelatihan')->name('Admin.Pelatihan.')->group(function() {
         Route::get('/', [PelatihanSessionController::class, 'index'])->name('index');
         Route::get('/create', [PelatihanSessionController::class, 'create'])->name('create');
         Route::post('/store', [PelatihanSessionController::class, 'store'])->name('store');
@@ -138,21 +139,20 @@ Route::middleware([\App\Http\Middleware\AdminMiddleware::class])->group(function
             ->name('Laporan.approval.reject');
     });
 
-    Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
-        Route::get('/pelatihan/verifikasi', [PelatihanVerifikasiController::class, 'index'])->name('pelatihan.verifikasi');
+    Route::prefix('admin')->middleware(['auth'])->name('Admin.')->group(function () {
+        Route::get('/pelatihan/verifikasi', [PelatihanVerifikasiController::class, 'index'])->name('Pelatihan.verifikasi');
 
         // Single-approve / reject pakai composite key (pelatihan_id + nip)
         Route::post('/pelatihan/verifikasi/{pelatihan}/{nip}/approve', [PelatihanVerifikasiController::class, 'approve'])->whereNumber('pelatihan')
             ->where('nip', '\d+')
-            ->name('pelatihan.verifikasi.approve');
+            ->name('Pelatihan.verifikasi.approve');
 
         Route::post('/pelatihan/verifikasi/{pelatihan}/{nip}/reject', [PelatihanVerifikasiController::class, 'reject'])->whereNumber('pelatihan')
             ->where('nip', '\d+')
-            ->name('pelatihan.verifikasi.reject');
-
+            ->name('Pelatihan.verifikasi.reject');
         // Bulk action (approve/reject beberapa sekaligus)
         Route::post('/pelatihan/verifikasi/bulk', [PelatihanVerifikasiController::class, 'bulk'])
-            ->name('pelatihan.verifikasi.bulk');
+            ->name('Pelatihan.verifikasi.bulk');
     });
 
 

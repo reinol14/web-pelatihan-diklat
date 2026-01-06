@@ -84,6 +84,7 @@ public function index()
 
     // ====== INJEK SERTIFIKAT KE RIWAYAT (laporan approved terakhir per sesi) ======
     $pelatihanIds = $history->pluck('pelatihan_id')->filter()->unique()->values()->all();
+    
 
     if (!empty($pelatihanIds)) {
         // ambil id laporan terakhir (approved) per (pelatihan_id, nip)
@@ -100,7 +101,7 @@ public function index()
         if ($lastApprovedIds->isNotEmpty()) {
             $approvedRows = \DB::table('laporan_pelatihan')
                 ->whereIn('id', $lastApprovedIds->values())
-                ->get(['id','pelatihan_id','sertifikat']);
+                ->get(['id','pelatihan_id','sertifikat','file_path']);
 
             $approvedMap = $approvedRows->keyBy('pelatihan_id');
         }
@@ -119,6 +120,19 @@ public function index()
                 $row->sertifikat = null;
             }
             return $row;
+            $lampiran = optional($approvedMap->get($row->pelatihan_id))->file_path;
+            if ($lampiran) {
+                // normalisasi ke "storage/..." bila perlu
+                $lampiran = ltrim($lampiran, '/');
+                if (!\Illuminate\Support\Str::startsWith($lampiran, 'storage/')) {
+                    $lampiran = 'storage/'.$lampiran;
+                }
+                $row->lampiran = $lampiran;
+            } else {
+                $row->lampiran = null;
+            }
+            return $row;
+            
         });
     }
 

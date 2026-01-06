@@ -23,6 +23,7 @@ class ref_pegawais extends Authenticatable
         'pangkat',
         'golongan',
         'jabatan',
+        'tmt',                 
 
         // organisasi
         'kode_unitkerja',     // <— ini yang benar, bukan unitkerja_id
@@ -48,6 +49,7 @@ class ref_pegawais extends Authenticatable
 
     protected $casts = [
         'tanggal_lahir' => 'date:Y-m-d',
+        'tmt' => 'date:Y-m-d',
     ];
 
     /** Relasi ke tabel unit kerja via kode_unitkerja */

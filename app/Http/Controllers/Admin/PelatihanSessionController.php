@@ -36,7 +36,14 @@ pbj_1_pelatihan::where('status', 'aktif')
             $q->where('penyelenggara', $req->penyelenggara);
         }
 
-        $sessions = $q->orderByDesc('created_at')->paginate(15)->appends($req->query());
+        $sessions = $q
+    // Prioritaskan status: aktif dulu, lalu tutup
+    ->orderByRaw("CASE WHEN status = 'aktif' THEN 0 ELSE 1 END")
+    // Setelah status, baru urutkan berdasarkan tanggal terbaru
+    ->orderByDesc('created_at')
+    ->paginate(15)
+    ->appends($req->query());
+
 
         // Data referensi untuk dropdown
         $provinsis = Provinsi::orderBy('nama')->get(['id','nama']);
@@ -104,7 +111,7 @@ pbj_1_pelatihan::where('status', 'aktif')
 
         pbj_1_pelatihan::create($data);
 
-        return redirect()->route('Admin.pelatihan.index')
+        return redirect()->route('Admin.Pelatihan.index')
             ->with('success', 'Sesi pelatihan berhasil dibuat.');
     }
 
@@ -155,7 +162,7 @@ pbj_1_pelatihan::where('status', 'aktif')
 
         $session->update($data);
 
-        return redirect()->route('Admin.pelatihan.index')
+        return redirect()->route('Admin.Pelatihan.index')
             ->with('success', 'Sesi pelatihan diperbarui.');
     }
 

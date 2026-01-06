@@ -26,9 +26,9 @@
                 </a>
             </li>
 
-            @if (Route::has('Admin.pelatihan.index'))
-                <li class="menu-item {{ Route::currentRouteName() === 'Admin.pelatihan.index' ? 'active' : '' }}">
-                    <a href="{{ route('Admin.pelatihan.index') }}" class="nav-link">
+            @if (Route::has('Admin.Pelatihan.index'))
+                <li class="menu-item {{ Route::currentRouteName() === 'Admin.Pelatihan.index' ? 'active' : '' }}">
+                    <a href="{{ route('Admin.Pelatihan.index') }}" class="nav-link">
                         <i class="fa fa-calendar"></i> <span class="menu-text">Pelatihan (Sesi)</span>
                     </a>
                 </li>
@@ -55,7 +55,7 @@
         </li>
 
         <li class="menu-item {{ Route::currentRouteName() === 'admin.pelatihan.verifikasi' ? 'active' : '' }}">
-            <a href="{{ route('admin.pelatihan.verifikasi') }}" class="nav-link">
+            <a href="{{ route('Admin.Pelatihan.verifikasi') }}" class="nav-link">
                 <i class="fa fa-clipboard-check"></i> <span class="menu-text">Verifikasi Pelatihan</span>
             </a>
         </li>

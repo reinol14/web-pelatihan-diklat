@@ -12,7 +12,7 @@
         <div class="alert alert-danger">{{ $errors->first() }}</div>
     @endif>
 
-    <form method="POST" action="{{ route('Admin.pelatihan.update', $session->id) }}" class="row g-3">
+    <form method="POST" action="{{ route('Admin.Pelatihan.update', $session->id) }}" class="row g-3">
         @csrf
         @method('PUT')
 
@@ -146,7 +146,7 @@
 
         <div class="col-12">
             <button class="btn btn-primary">Perbarui</button>
-            <a href="{{ route('Admin.pelatihan.index') }}" class="btn btn-outline-secondary">Batal</a>
+            <a href="{{ route('Admin.Pelatihan.index') }}" class="btn btn-outline-secondary">Batal</a>
         </div>
     </form>
 </div>

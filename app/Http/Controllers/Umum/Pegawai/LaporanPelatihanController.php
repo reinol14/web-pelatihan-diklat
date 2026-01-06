@@ -93,10 +93,10 @@ class LaporanPelatihanController extends Controller
                     ->with('info', 'Perbaiki laporan yang ditolak lalu kirim ulang.');
             }
             if ($last->status === 'pending') {
-                return redirect()->route('Pegawai.laporan.index')->with('info', 'Laporan sudah diajukan dan menunggu verifikasi.');
+                return redirect()->route('Pegawai.Laporan.index')->with('info', 'Laporan sudah diajukan dan menunggu verifikasi.');
             }
             if ($last->status === 'approved') {
-                return redirect()->route('Pegawai.laporan.index')->with('info', 'Laporan sudah disetujui.');
+                return redirect()->route('Pegawai.Laporan.index')->with('info', 'Laporan sudah disetujui.');
             }
         }
 
@@ -148,22 +148,32 @@ public function store(Request $request, $id)
     }
 
     // simpan lampiran laporan (opsional) ke kolom file_path
-    $lampiranPath = null;
-    if ($request->hasFile('file')) {
-        $fname        = 'laporan_' . $id . '_' . $nip . '_' . \Illuminate\Support\Str::random(6) . '.' .
-                         $request->file('file')->getClientOriginalExtension();
-        $stored       = $request->file('file')->storeAs('public/laporan_pelatihan/lampiran', $fname);
-        $lampiranPath = $stored ? str_replace('public/', 'storage/', $stored) : null;
-    }
+$lampiranPath = null;
+
+if ($request->hasFile('file')) {
+
+    $fname = 'laporan_' . $id . '_' . $nip . '_' . Str::random(6) . '.' .
+             $request->file('file')->getClientOriginalExtension();
+
+    // Simpan ke disk public TANPA prefix "public/"
+    $lampiranPath = $request->file('file')
+                            ->storeAs('laporan_pelatihan/lampiran', $fname, 'public');
+}
+
 
     // simpan sertifikat (WAJIB) ke kolom `sertifikat`
-    $sertifikatPath = null;
-    if ($request->hasFile('sertifikat')) {
-        $cname          = 'sertifikat_' . $id . '_' . $nip . '_' . \Illuminate\Support\Str::random(6) . '.' .
-                           $request->file('sertifikat')->getClientOriginalExtension();
-        $storedCert     = $request->file('sertifikat')->storeAs('public/laporan_pelatihan/sertifikat', $cname);
-        $sertifikatPath = $storedCert ? str_replace('public/', 'storage/', $storedCert) : null;
-    }
+$sertifikatPath = null;
+
+if ($request->hasFile('sertifikat')) {
+
+    $cname = 'sertifikat_' . $id . '_' . $nip . '_' . Str::random(6) . '.' .
+             $request->file('sertifikat')->getClientOriginalExtension();
+
+    // Simpan ke disk public dengan path benar
+    $sertifikatPath = $request->file('sertifikat')
+                              ->storeAs('laporan_pelatihan/sertifikat', $cname, 'public');
+}
+
 
     DB::table('laporan_pelatihan')->insert([
         'pelatihan_id' => $id,

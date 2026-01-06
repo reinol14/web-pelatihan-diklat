@@ -52,12 +52,12 @@
     <div class="col-md-2 d-flex gap-2">
       <button class="btn btn-primary w-100" type="submit"><i class="bi bi-funnel me-1"></i> Terapkan</button>
       {{-- PERBAIKAN: route reset --}}
-      <a href="{{ route('admin.pelatihan.verifikasi') }}" class="btn btn-outline-secondary">Reset</a>
+      <a href="{{ route('Admin.Pelatihan.verifikasi') }}" class="btn btn-outline-secondary">Reset</a>
     </div>
   </form>
 
   {{-- Bulk actions --}}
-  <form method="POST" action="{{ route('admin.pelatihan.verifikasi.bulk') }}">
+  <form method="POST" action="{{ route('Admin.Pelatihan.verifikasi.bulk') }}">
     @csrf
     <div class="d-flex align-items-center justify-content-between mb-2">
       <div class="d-flex gap-2">
@@ -153,7 +153,7 @@
             class="btn btn-sm btn-success"
             title="{{ $penuh ? 'Kuota penuh' : 'Setujui' }}"
             {{ $penuh ? 'disabled' : '' }}
-            formaction="{{ route('admin.pelatihan.verifikasi.approve', ['pelatihan'=>$row->pelatihan_id, 'nip'=>$row->nip]) }}"
+            formaction="{{ route('Admin.Pelatihan.verifikasi.approve', ['pelatihan'=>$row->pelatihan_id, 'nip'=>$row->nip]) }}"
             formmethod="POST"
             onclick="return {{ $penuh ? 'false' : 'confirm(\'Setujui pengajuan ini?\')' }}">
       <i class="bi bi-check2"></i>
@@ -162,7 +162,7 @@
     <button type="submit"
             class="btn btn-sm btn-outline-danger"
             title="Tolak"
-            formaction="{{ route('admin.pelatihan.verifikasi.reject', ['pelatihan'=>$row->pelatihan_id, 'nip'=>$row->nip]) }}"
+            formaction="{{ route('Admin.Pelatihan.verifikasi.reject', ['pelatihan'=>$row->pelatihan_id, 'nip'=>$row->nip]) }}"
             formmethod="POST"
             onclick="return confirm('Tolak pengajuan ini?')">
       <i class="bi bi-x"></i>

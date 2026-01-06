@@ -11,7 +11,7 @@
         <div class="alert alert-danger">{{ $errors->first() }}</div>
     @endif
 
-    <form method="POST" action="{{ route('Admin.pelatihan.store') }}" class="row g-3">
+    <form method="POST" action="{{ route('Admin.Pelatihan.store') }}" class="row g-3">
         @csrf
 
         {{-- Katalog (opsional) --}}
@@ -60,10 +60,10 @@
 
         {{-- Pelaksanaan (deskripsi teks panjang) --}}
         <div class="col-12">
-            <label for="pelaksanaan" class="form-label">Deskripsi Pelaksanaan</label>
-            <textarea name="pelaksanaan" id="pelaksanaan" class="form-control" rows="4"
-                      placeholder="Contoh: Pertemuan sinkron Senin–Rabu 09.00–12.00; tugas mandiri via LMS; ujian akhir daring.">{{ old('pelaksanaan') }}</textarea>
-            @error('pelaksanaan') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+            <label for="deskripsi" class="form-label">Deskripsi Pelaksanaan</label>
+            <textarea name="deskripsi" id="deskripsi" class="form-control" rows="4"
+                      placeholder="Contoh: Pertemuan sinkron Senin–Rabu 09.00–12.00; tugas mandiri via LMS; ujian akhir daring.">{{ old('deskripsi') }}</textarea>
+            @error('deskripsi') <div class="text-danger mt-1">{{ $message }}</div> @enderror
             <div class="form-text">Jelaskan mekanisme pelaksanaan/jadwal secara ringkas (boleh kosong).</div>
         </div>
 
@@ -121,7 +121,7 @@
 
         <div class="col-12">
             <button class="btn btn-primary mt-2">Simpan</button>
-            <a href="{{ route('Admin.pelatihan.index') }}" class="btn btn-outline-secondary mt-2">Batal</a>
+            <a href="{{ route('Admin.Pelatihan.index') }}" class="btn btn-outline-secondary mt-2">Batal</a>
         </div>
     </form>
 </div>

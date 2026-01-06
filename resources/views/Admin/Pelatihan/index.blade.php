@@ -7,7 +7,7 @@
     <div class="row mb-3">
         <div class="col-md-8">
             <!-- Filter: provinsi, kota, jenis, penyelenggara -->
-            <form method="GET" action="{{ route('Admin.pelatihan.index') }}" class="row g-2">
+            <form method="GET" action="{{ route('Admin.Pelatihan.index') }}" class="row g-2">
                 <div class="col-md-3">
                     <label for="provinsi" class="form-label">Provinsi</label>
                     <select id="provinsi" name="provinsi" class="form-select">
@@ -48,13 +48,13 @@
 
                 <div class="col-12 d-flex gap-2 mt-1">
                     <button type="submit" class="btn btn-primary">Filter</button>
-                    <a href="{{ route('Admin.pelatihan.index') }}" class="btn btn-outline-secondary">Reset</a>
+                    <a href="{{ route('Admin.Pelatihan.index') }}" class="btn btn-outline-secondary">Reset</a>
                 </div>
             </form>
         </div>
 
         <div class="col-md-4 text-end align-self-end">
-            <a href="{{ route('Admin.pelatihan.create') }}" class="btn btn-primary">Buat Sesi Baru</a>
+            <a href="{{ route('Admin.Pelatihan.create') }}" class="btn btn-primary">Buat Sesi Baru</a>
         </div>
     </div>
 
@@ -99,12 +99,12 @@
                         </span>
                     </td>
                         <td>
-                            <a href="{{ route('Admin.pelatihan.edit', $s->id) }}" 
+                            <a href="{{ route('Admin.Pelatihan.edit', $s->id) }}" 
                             class="btn btn-sm btn-warning" title="Edit">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
 
-                            <form action="{{ route('Admin.pelatihan.destroy', $s->id) }}" 
+                            <form action="{{ route('Admin.Pelatihan.destroy', $s->id) }}" 
                                 method="POST" class="d-inline"
                                 onsubmit="return confirm('Hapus sesi?')">
                                 @csrf

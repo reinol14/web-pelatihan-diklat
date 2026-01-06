@@ -87,19 +87,21 @@ class PegawaiController extends Controller
 
         // Validasi input data
         $validated = $request->validate([
-            'nip'                 => 'required|string|max:255',
-            'nama'                => 'required|string|max:255',
-            'pangkat'             => 'required|string',
-            'golongan'            => 'required|string',
-            'jabatan'             => 'required|string',
-            'jenis_asn'           => 'required|string',
-            'kategori_jabatanasn' => 'required|string',
-            'kode_unitkerja'      => 'required|exists:ref_unitkerjas,kode_unitkerja',
-            'email'               => 'required|email',
-            'no_hp'               => 'required|string',
-            'alamat'              => 'required|string',
-            'tmt'                 => 'required|date',
-            'foto'                => 'nullable|image|max:2048',
+        'nama'                  => 'required|string|max:150',
+        'nip'                   => 'required|string|max:30|unique:ref_pegawais,nip,'.$id.'|unique:pegawai_registrations,nip,'.$id,
+        'email'                 => 'required|email:rfc,dns|unique:ref_pegawais,email,'.$id.'|unique:pegawai_registrations,email,'.$id,
+        'no_hp'                 => 'nullable|string|max:30|unique:ref_pegawais,no_hp,'.$id.'|unique:pegawai_registrations,no_hp,'.$id,
+        'tempat_lahir'          => 'nullable|string|max:150',
+        'tanggal_lahir'         => 'nullable|date',
+        'pangkat'               => 'nullable|string|max:150',
+        'golongan'              => 'nullable|string|max:50',
+        'jabatan'               => 'nullable|string|max:150',
+        'jenis_asn'             => 'nullable|string|max:100',
+        'kategori_jabatanasn'   => 'nullable|string|max:150',
+        'kode_unitkerja'        => 'required|integer',
+        'alamat'                => 'nullable|string|max:255',
+        'tmt'                   => 'nullable|date',
+        'foto'                  => 'nullable|image|max:2048',
         ]);
 
         // Perbarui data pegawai di model
@@ -211,7 +213,6 @@ public function store(Request $request)
         'kode_unitkerja'      => 'required|exists:ref_unitkerjas,kode_unitkerja',
         'email'               => 'required|email|unique:ref_pegawais,email',
         'no_hp'               => 'required|string',
-        'no_wa'               => 'nullable|string',
         'alamat'              => 'required|string',
         'tmt'                 => 'required|date',
         'foto'                => 'nullable|image|max:2048',

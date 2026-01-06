@@ -107,7 +107,7 @@
                 </td>
                 <td class="text-end">
                   @if($status === 'belum' && $wajibKirim)
-                    <a href="{{ route('Pegawai.laporan.create', ['id' => $it->id]) }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('Pegawai.Laporan.create', ['id' => $it->id]) }}" class="btn btn-primary btn-sm">
                       <i class="bi bi-upload me-1"></i> Kirim Laporan
                     </a>
                   @elseif($status === 'pending')

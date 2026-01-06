@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class LaporanPelatihanApprovalController extends Controller
 {
@@ -24,6 +24,7 @@ class LaporanPelatihanApprovalController extends Controller
             ->select([
                 'l.id','l.nip','l.judul','l.status','l.keterangan','l.created_at','l.updated_at',
                 DB::raw('l.file_path as file_path'),
+                DB::raw('l.sertifikat as sertifikat'),
                 's.nama_pelatihan',
                 'p.nama as nama_pegawai','p.kode_unitkerja',
             ]);
@@ -63,6 +64,7 @@ class LaporanPelatihanApprovalController extends Controller
         return view('Admin.Laporan.approvelaporan', compact('items','counts','status','q','dateFrom','dateTo'));
     }
 
+    
     public function approve(Request $request, $id)
     {
         $keterangan = $request->filled('keterangan') ? trim($request->input('keterangan')) : null;
