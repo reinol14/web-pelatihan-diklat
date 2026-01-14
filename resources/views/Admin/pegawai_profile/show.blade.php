@@ -1,67 +1,186 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $payload = (array) $item->payload;
+
+    // Tentukan role reviewer
+    $reviewerRole = null;
+    if ($item->reviewed_by == 1) {
+        $reviewerRole = 'Super Admin';
+    } elseif ($item->reviewed_by == 2) {
+        $reviewerRole = 'Admin Unit Kerja';
+    }
+
+    // Label status
+    $statusLabel = match($item->status) {
+        'pending'  => ['Menunggu Verifikasi', 'warning'],
+        'approved' => ['Disetujui', 'success'],
+        'rejected' => ['Ditolak', 'danger'],
+        default    => [$item->status, 'secondary'],
+    };
+@endphp
+
 <div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Detail Pengajuan #{{ $item->id }}</h3>
-    <a href="{{ route('Admin.pegawai_profile.index') }}" class="btn btn-outline-secondary btn-sm">Kembali</a>
-  </div>
 
-  <div class="row g-3">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header bg-white"><strong>Data Usulan</strong></div>
-        <div class="card-body">
-          <pre class="mb-0" style="white-space:pre-wrap">{{ json_encode($item->payload, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) }}</pre>
+    {{-- HEADER --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Detail Pengajuan Perubahan Profil</h4>
+            <div class="text-muted small">
+                Pegawai: <strong>{{ $item->pegawai?->nama }}</strong> — NIP {{ $item->pegawai?->nip }}
+            </div>
         </div>
-      </div>
+        <a href="{{ route('Admin.pegawai_profile.index') }}" class="btn btn-outline-secondary btn-sm">
+            ← Kembali
+        </a>
     </div>
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header bg-white"><strong>Data Saat Ini</strong></div>
-        <div class="card-body">
-          <pre class="mb-0" style="white-space:pre-wrap">
-{{ json_encode($item->pegawai?->only(array_keys($item->payload ?? [])) ?? [], JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) }}
-          </pre>
+
+    {{-- STATUS --}}
+    <div class="card mb-4 border-{{ $statusLabel[1] }}">
+        <div class="card-body d-flex flex-wrap gap-3 align-items-center">
+            <span class="badge bg-{{ $statusLabel[1] }}">
+                {{ $statusLabel[0] }}
+            </span>
+
+            @if($reviewerRole)
+                <span class="badge bg-primary">
+                    Diverifikasi oleh {{ $reviewerRole }}
+                </span>
+            @endif
+
+            @if($item->reviewed_at)
+                <span class="text-muted small">
+                    {{ $item->reviewed_at->format('d M Y H:i') }}
+                </span>
+            @endif
         </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="card mt-3">
-    <div class="card-body d-flex flex-wrap gap-2 align-items-center">
-      <div>Status:
-        <span class="badge text-bg-{{ $item->status=='pending'?'warning':($item->status=='approved'?'success':'secondary') }}">
-          {{ $item->status }}
-        </span>
-      </div>
-      @if($item->review_note)
-        <div class="text-muted">Catatan: {{ $item->review_note }}</div>
-      @endif
+        @if($item->review_note)
+            <div class="card-footer bg-light small">
+                <strong>Catatan Admin:</strong><br>
+                {{ $item->review_note }}
+            </div>
+        @endif
     </div>
-  </div>
 
-  @if($item->status === 'pending')
-    <div class="d-flex flex-wrap gap-2 mt-3">
-      <form method="POST" action="{{ route('Admin.pegawai_profile.approve',$item->id) }}" class="d-flex gap-2">
-        @csrf
-        <input type="text" name="review_note" class="form-control" placeholder="Catatan (opsional)" style="max-width:320px">
-        <button class="btn btn-success">Setujui & Terapkan</button>
-      </form>
+    {{-- DATA PERUBAHAN --}}
+    <div class="row g-4">
+        {{-- DATA USULAN --}}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-white">
+                    <strong>Data Usulan</strong>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        @forelse($payload as $field => $value)
+                              <tr>
+                                <th width="40%" class="text-muted">
+                                    {{ ucfirst(str_replace('_',' ', $field)) }}
+                                </th>
+                                <td>
+                                    @if($field === 'foto' && $value)
+                                        <img
+                                            src="{{ asset('storage/'.$value) }}"
+                                            alt="Foto Usulan"
+                                            class="img-thumbnail"
+                                            style="max-height:160px"
+                                        >
+                                    @else
+                                        {{ $value ?: '-' }}
+                                    @endif
+                                </td>
+                              </tr>
+                            @empty
 
-      <form method="POST" action="{{ route('Admin.pegawai_profile.reject',$item->id) }}" class="d-flex gap-2">
-        @csrf
-        <input type="text" name="review_note" class="form-control" placeholder="Alasan penolakan (opsional)" style="max-width:320px">
-        <button class="btn btn-outline-danger">Tolak</button>
-      </form>
+                            <tr>
+                                <td class="text-muted">Tidak ada data usulan.</td>
+                            </tr>
+                        @endforelse
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- DATA SAAT INI --}}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-white">
+                    <strong>Data Saat Ini</strong>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        @forelse($payload as $field => $value)
+                          <tr>
+                              <th width="40%" class="text-muted">
+                                  {{ ucfirst(str_replace('_',' ', $field)) }}
+                              </th>
+                              <td>
+                                  @if($field === 'foto' && $item->pegawai?->foto)
+                                      <img
+                                          src="{{ asset('storage/'.$item->pegawai->foto) }}"
+                                          alt="Foto Saat Ini"
+                                          class="img-thumbnail"
+                                          style="max-height:160px"
+                                      >
+                                  @else
+                                      {{ $item->pegawai?->$field ?? '-' }}
+                                  @endif
+                              </td>
+                          </tr>
+                          @empty
+
+                            <tr>
+                                <td class="text-muted">Tidak ada data.</td>
+                            </tr>
+                        @endforelse
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-  @else
-    <div class="alert alert-info mt-3 mb-0">
-      Pengajuan sudah <strong>{{ $item->status }}</strong>.
-      @if($item->reviewed_at)
-        Ditinjau pada {{ $item->reviewed_at->format('d M Y H:i') }}.
-      @endif
-    </div>
-  @endif
+
+    {{-- ACTION --}}
+    @if($item->status === 'pending')
+        <div class="card mt-4">
+            <div class="card-body">
+                <h6 class="mb-3">Tindakan Admin</h6>
+
+                <div class="d-flex flex-wrap gap-3">
+                    {{-- APPROVE --}}
+                    <form method="POST" action="{{ route('Admin.pegawai_profile.approve', $item->id) }}" class="d-flex gap-2">
+                        @csrf
+                        <input
+                            type="text"
+                            name="review_note"
+                            class="form-control"
+                            placeholder="Catatan persetujuan (opsional)"
+                            style="max-width:300px"
+                        >
+                        <button class="btn btn-success">
+                            ✔ Setujui & Terapkan
+                        </button>
+                    </form>
+
+                    {{-- REJECT --}}
+                    <form method="POST" action="{{ route('Admin.pegawai_profile.reject', $item->id) }}" class="d-flex gap-2">
+                        @csrf
+                        <input
+                            type="text"
+                            name="review_note"
+                            class="form-control"
+                            placeholder="Alasan penolakan"
+                            style="max-width:300px"
+                        >
+                        <button class="btn btn-outline-danger">
+                            ✖ Tolak
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
+
 </div>
 @endsection

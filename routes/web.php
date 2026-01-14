@@ -53,6 +53,7 @@ Route::post('/pegawai/register', [PegawaiSelfRegisterController::class, 'submit'
 Route::middleware(['auth:pegawais'])->group(function () {
     Route::get('/pegawai/dashboard', [PegawaiDashboardController::class, 'index'])->name('Pegawai.dashboard');
     Route::get('/pegawai/profil', [PegawaiDashboardController::class, 'profil'])->name('Pegawai.profil');
+    Route::get('/pegawai/profil/status', [PegawaiDashboardController::class, 'status'])->name('Pegawai.profil.status');
     // Profil pegawai
     Route::prefix('pegawai')->name('Pegawai.')->group(function () {
     Route::get('/profil/edit', [\App\Http\Controllers\Pegawai\ProfileChangeController::class, 'edit'])->name('profil.edit');

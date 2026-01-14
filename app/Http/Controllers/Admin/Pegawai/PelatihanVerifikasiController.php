@@ -7,41 +7,74 @@ use Illuminate\Http\Request;
 use App\Models\PesertaPelatihan;
 use App\Models\pbj_1_pelatihan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PelatihanVerifikasiController extends Controller
 {
-    public function index(Request $request)
-    {
-        $status  = $request->input('status', 'menunggu'); // default: menunggu
-        $q       = trim($request->input('q', ''));
-        $sesiId  = $request->input('pelatihan_id');
+public function index(Request $request)
+{
+    $status  = $request->input('status', 'menunggu');
+    $q       = trim($request->input('q', ''));
+    $sesiId  = $request->input('pelatihan_id');
 
-        $query = PesertaPelatihan::with(['pelatihan:id,nama_pelatihan,tanggal_mulai,tanggal_selesai,kuota,metode_pelatihan,lokasi'])
-            ->when($status, fn($qq) => $qq->where('status', $status))
-            ->when($sesiId, fn($qq) => $qq->where('pelatihan_id', $sesiId))
-            ->when($q !== '', function ($qq) use ($q) {
-                $qq->where(function ($x) use ($q) {
-                    $x->where('nip', 'like', "%{$q}%")
-                      ->orWhere('nama', 'like', "%{$q}%")
-                      ->orWhere('unitkerja', 'like', "%{$q}%");
-                });
-            })
-            ->whereHas('pelatihan') // hindari orphan
-            ->orderByDesc('created_at');
+    $admin = Auth::user();
+    $isSuperAdmin = $admin->is_admin == 1; // ✅ FIX UTAMA
 
-        $pesertas = $query->paginate(15)->withQueryString();
+    $query = PesertaPelatihan::query()
+        ->with([
+            'pelatihan:id,nama_pelatihan,tanggal_mulai,tanggal_selesai,kuota,metode_pelatihan,lokasi'
+        ])
 
-        // Ambil list sesi untuk filter dropdown
-        $sessions = pbj_1_pelatihan::select('id','nama_pelatihan')->orderBy('nama_pelatihan')->get();
+        // filter status
+        ->when($status, fn ($qq) => $qq->where('peserta_pelatihan.status', $status))
 
-        // Hitung okupansi per sesi (kursi terpakai)
-        $terpakaiMap = PesertaPelatihan::select('pelatihan_id', DB::raw("SUM(CASE WHEN status IN ('diterima','berjalan','menunggu_laporan') THEN 1 ELSE 0 END) as used"))
-            ->groupBy('pelatihan_id')
-            ->pluck('used', 'pelatihan_id');
+        // filter sesi
+        ->when($sesiId, fn ($qq) => $qq->where('peserta_pelatihan.pelatihan_id', $sesiId))
 
-        return view('Admin.Pelatihan.verifikasi', compact('pesertas', 'sessions', 'status', 'q', 'sesiId', 'terpakaiMap'));
-    }
+        // 🔐 BATASAN ADMIN UNIT
+        ->when(!$isSuperAdmin, function ($qq) use ($admin) {
+            $qq->join('ref_pegawais', 'ref_pegawais.nip', '=', 'peserta_pelatihan.nip')
+               ->where('ref_pegawais.kode_unitkerja', $admin->kode_unitkerja);
+        })
 
+        // 🔍 pencarian
+        ->when($q !== '', function ($qq) use ($q) {
+            $qq->where(function ($x) use ($q) {
+                $x->where('peserta_pelatihan.nip', 'like', "%{$q}%")
+                  ->orWhere('peserta_pelatihan.nama', 'like', "%{$q}%");
+            });
+        })
+
+        ->whereHas('pelatihan')
+        ->select('peserta_pelatihan.*')
+        ->orderByDesc('peserta_pelatihan.created_at');
+
+    $pesertas = $query->paginate(15)->withQueryString();
+
+    // Dropdown sesi
+    $sessions = pbj_1_pelatihan::select('id','nama_pelatihan')
+        ->orderBy('nama_pelatihan')
+        ->get();
+
+    // Hitung okupansi
+    $terpakaiMap = PesertaPelatihan::select(
+            'pelatihan_id',
+            DB::raw("SUM(CASE 
+                WHEN status IN ('diterima','berjalan','menunggu_laporan') 
+                THEN 1 ELSE 0 END) as used")
+        )
+        ->groupBy('pelatihan_id')
+        ->pluck('used', 'pelatihan_id');
+
+    return view('Admin.Pelatihan.verifikasi', compact(
+        'pesertas',
+        'sessions',
+        'status',
+        'q',
+        'sesiId',
+        'terpakaiMap'
+    ));
+}
     public function approve($pelatihan, $nip)
     {
         try {

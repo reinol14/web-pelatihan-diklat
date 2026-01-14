@@ -12,36 +12,88 @@ use Illuminate\Support\Facades\DB;
 class PegawaiProfileApprovalController extends Controller
 {
     public function index(Request $request)
-    {
-        $status = $request->get('status');   // pending/approved/rejected/null
-        $q      = $request->get('q');        // cari nama/nip
+{
+    $admin  = Auth::user();
+    $status = $request->get('status');   // pending / approved / rejected
+    $q      = $request->get('q');        // cari nama / nip
 
-        $items = PegawaiProfileChange::with('pegawai')
-            ->when($status, fn($w) => $w->where('status',$status))
-            ->when($q, function($w) use ($q) {
-                $w->whereHas('pegawai', function($x) use ($q) {
-                    $x->where('nama','like',"%$q%")->orWhere('nip','like',"%$q%");
-                });
-            })
-            ->orderByRaw("FIELD(status,'pending','approved','rejected')")
-            ->orderByDesc('created_at')
-            ->paginate(20)
-            ->appends($request->query());
+    $isSuperAdmin = $admin->id == 1;
 
-        $counts = [
-            'pending'  => PegawaiProfileChange::where('status','pending')->count(),
-            'approved' => PegawaiProfileChange::where('status','approved')->count(),
-            'rejected' => PegawaiProfileChange::where('status','rejected')->count(),
-        ];
+    $items = PegawaiProfileChange::with('pegawai')
+        ->when(!$isSuperAdmin, function ($w) use ($admin) {
+            // Batasi hanya ASN satu unit kerja
+            $w->whereHas('pegawai', function ($x) use ($admin) {
+                $x->where('kode_unitkerja', $admin->kode_unitkerja);
+            });
+        })
+        ->when($status, fn ($w) => $w->where('status', $status))
+        ->when($q, function ($w) use ($q) {
+            $w->whereHas('pegawai', function ($x) use ($q) {
+                $x->where('nama', 'like', "%$q%")
+                  ->orWhere('nip', 'like', "%$q%");
+            });
+        })
+        ->orderByRaw("FIELD(status,'pending','approved','rejected')")
+        ->orderByDesc('created_at')
+        ->paginate(20)
+        ->appends($request->query());
 
-        return view('Admin.pegawai_profile.index', compact('items','counts','status','q'));
+    /**
+     * ===============================
+     * COUNTS (HARUS IKUT DIBATASI)
+     * ===============================
+     */
+    $baseCountQuery = PegawaiProfileChange::query()
+        ->when(!$isSuperAdmin, function ($w) use ($admin) {
+            $w->whereHas('pegawai', function ($x) use ($admin) {
+                $x->where('kode_unitkerja', $admin->kode_unitkerja);
+            });
+        });
+
+    $counts = [
+        'pending'  => (clone $baseCountQuery)->where('status','pending')->count(),
+        'approved' => (clone $baseCountQuery)->where('status','approved')->count(),
+        'rejected' => (clone $baseCountQuery)->where('status','rejected')->count(),
+    ];
+
+    return view('Admin.pegawai_profile.index', compact(
+        'items',
+        'counts',
+        'status',
+        'q'
+    ));
+}
+
+
+public function show($id)
+{
+    $admin = Auth::user();
+
+    $item = PegawaiProfileChange::with([
+        'pegawai:id,nip,nama,kode_unitkerja'
+    ])->findOrFail($id);
+
+    /**
+     * ===============================
+     * PEMBATASAN AKSES
+     * ===============================
+     * Superadmin (id = 1) -> boleh lihat semua
+     * Admin unit kerja    -> hanya ASN satu unit
+     */
+    $isSuperAdmin = $admin->id == 1;
+
+    if (! $isSuperAdmin) {
+        // Pastikan ASN memiliki unit kerja
+        abort_if(
+            $item->pegawai->kode_unitkerja !== $admin->kode_unitkerja,
+            403,
+            'Anda tidak berhak melihat pengajuan ini.'
+        );
     }
 
-    public function show($id)
-    {
-        $item = PegawaiProfileChange::with('pegawai')->findOrFail($id);
-        return view('Admin.pegawai_profile.show', compact('item'));
-    }
+    return view('Admin.pegawai_profile.show', compact('item'));
+}
+
 
 public function approve(Request $request, $id)
 {

@@ -18,11 +18,13 @@ class UmumPelatihanController extends Controller
         $provinsi = $request->input('provinsi');
         $kota     = $request->input('kota');
         $jenis    = $request->input('jenis');
+        $status   = $request->input('status');
 
         // Filter Bulan/Tahun
-        $bulan = (int) $request->input('bulan'); // 1..12
+        $bulan = (int) $request->input('bulan');
         $tahun = (int) $request->input('tahun');
         $startDate = $endDate = null;
+
         if ($bulan && $tahun) {
             $startDate = Carbon::createFromDate($tahun, $bulan, 1)->startOfMonth()->toDateString();
             $endDate   = Carbon::createFromDate($tahun, $bulan, 1)->endOfMonth()->toDateString();
@@ -35,10 +37,10 @@ class UmumPelatihanController extends Controller
             $endDate   = Carbon::createFromDate($yy, $bulan, 1)->endOfMonth()->toDateString();
         }
 
-        // Subquery: hitung kursi terpakai (yang benar2 "makan kursi")
-        // dan ikut sertakan hitungan legacy "registered" untuk fallback di Blade
+        // Subquery kursi
         $subCounts = DB::table('peserta_pelatihan')
-            ->select('pelatihan_id',
+            ->select(
+                'pelatihan_id',
                 DB::raw("SUM(CASE WHEN status IN ('diterima','berjalan','menunggu_laporan') THEN 1 ELSE 0 END) AS peserta_terpakai"),
                 DB::raw("SUM(CASE WHEN status = 'registered' THEN 1 ELSE 0 END) AS peserta_registered")
             )
@@ -53,19 +55,22 @@ class UmumPelatihanController extends Controller
                 's.jenis_pelatihan',
                 's.tanggal_mulai',
                 's.tanggal_selesai',
-                's.status',        // 'aktif' atau nonaktif lain
+                's.status',
                 's.kuota',
                 's.lokasi',
+                's.provinsi_id',
+                's.kota_id',
                 DB::raw('NULL as file_pelatihan'),
                 DB::raw('COALESCE(pp.peserta_terpakai,0) AS peserta_terpakai'),
                 DB::raw('COALESCE(pp.peserta_registered,0) AS peserta_registered'),
+                DB::raw('(s.kuota - COALESCE(pp.peserta_terpakai,0)) AS sisa_kuota')
             ])
-            ->when($q,         fn($qr) => $qr->where('s.nama_pelatihan', 'like', "%{$q}%"))
-            ->when($jenis,     fn($qr) => $qr->where('s.jenis_pelatihan', $jenis))
-            ->when($provinsi,  fn($qr) => $qr->where('s.provinsi_id', $provinsi))
-            ->when($kota,      fn($qr) => $qr->where('s.kota_id', $kota))
+            ->when($q, fn($qr) => $qr->where('s.nama_pelatihan', 'like', "%{$q}%"))
+            ->when($jenis, fn($qr) => $qr->where('s.jenis_pelatihan', $jenis))
+            ->when($provinsi, fn($qr) => $qr->where('s.provinsi_id', $provinsi))
+            ->when($kota, fn($qr) => $qr->where('s.kota_id', $kota))
+            ->when($status, fn($qr) => $qr->where('s.status', $status))
             ->when($startDate && $endDate, function ($qr) use ($startDate, $endDate) {
-                // filter irisan tanggal
                 $qr->whereDate('s.tanggal_mulai','<=',$endDate)
                    ->whereDate('s.tanggal_selesai','>=',$startDate);
             })
@@ -77,8 +82,11 @@ class UmumPelatihanController extends Controller
         $provinsis = DB::table('provinsis')->orderBy('nama')->get(['id','nama']);
         $kotas     = DB::table('kotas')->orderBy('nama')->get(['id','provinsi_id','nama']);
         $jenisList = DB::table('pbj_1_pelatihans')
-            ->whereNotNull('jenis_pelatihan')->where('jenis_pelatihan','!=','')
-            ->distinct()->orderBy('jenis_pelatihan')->pluck('jenis_pelatihan');
+            ->whereNotNull('jenis_pelatihan')
+            ->where('jenis_pelatihan','!=','')
+            ->distinct()
+            ->orderBy('jenis_pelatihan')
+            ->pluck('jenis_pelatihan');
 
         $bulanList = [
             1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',
@@ -86,35 +94,17 @@ class UmumPelatihanController extends Controller
         ];
         $years = range(Carbon::today()->year - 2, Carbon::today()->year + 2);
 
-        // Aturan "hanya 1 pelatihan berjalan" (blokir personal)
-        $hasOngoing = false;
-        $myRegisteredIds = [];
-        if (Auth::guard('pegawais')->check()) {
-            $nip   = Auth::guard('pegawais')->user()->nip;
-            $today = Carbon::today()->toDateString();
-
-            // id sesi yang sudah didaftarkan user (semua status kemajuan yang relevan)
-            $myRegisteredIds = DB::table('peserta_pelatihan')
-                ->where('nip', $nip)
-                ->whereIn('status', ['menunggu','diterima','berjalan','menunggu_laporan','registered']) // include legacy
-                ->pluck('pelatihan_id')->all();
-
-            // apakah ada pelatihan lain yang sedang berlangsung utk user (hanya yang sudah diterima/berjalan/menunggu_laporan atau legacy registered)
-            $hasOngoing = DB::table('peserta_pelatihan as pp')
-                ->join('pbj_1_pelatihans as s','s.id','=','pp.pelatihan_id')
-                ->where('pp.nip',$nip)
-                ->whereIn('pp.status',['diterima','berjalan','menunggu_laporan','registered']) // legacy support
-                ->whereDate('s.tanggal_mulai','<=',$today)
-                ->whereDate('s.tanggal_selesai','>=',$today)
-                
-                ->exists();
-                
-        }
+        // Status pelatihan untuk filter
+        $statusList = [
+            'aktif' => 'Aktif',
+            'selesai' => 'Selesai',
+            'ditunda' => 'Ditunda',
+            'dibatalkan' => 'Dibatalkan'
+        ];
 
         return view('MenuUmum.index', compact(
             'trainings','q','provinsis','kotas','jenisList',
-            'hasOngoing','myRegisteredIds','bulanList','years'
-            
+            'bulanList','years','statusList','provinsi','kota','jenis','status','bulan','tahun'
         ));
     }
 
@@ -122,22 +112,79 @@ class UmumPelatihanController extends Controller
     public function show($id)
     {
         $session = DB::table('pbj_1_pelatihans')->where('id', $id)->first();
-        if (!$session) abort(404);
+        
+        if (!$session) {
+            abort(404, 'Pelatihan tidak ditemukan');
+        }
 
         $provinsis = DB::table('provinsis')->orderBy('nama')->get(['id','nama']);
         $kotas     = DB::table('kotas')->orderBy('nama')->get(['id','provinsi_id','nama']);
 
-        // kursi terpakai (pakai status makan kursi)
+        // Kursi terpakai
         $pesertaTerpakai = DB::table('peserta_pelatihan')
             ->where('pelatihan_id', $id)
             ->whereIn('status', ['diterima','berjalan','menunggu_laporan'])
             ->count();
 
+        // Kursi menunggu verifikasi
+        $pesertaMenunggu = DB::table('peserta_pelatihan')
+            ->where('pelatihan_id', $id)
+            ->where('status', 'menunggu')
+            ->count();
+
+        // Sisa kuota
+        $sisaKuota = max(0, ($session->kuota ?? 0) - $pesertaTerpakai);
+
+        // Cek apakah user sudah terdaftar
+        $sudahTerdaftar = false;
+        $statusPendaftaran = null;
+        
+        if (Auth::guard('pegawais')->check()) {
+            $pegawai = Auth::guard('pegawais')->user();
+            $pendaftaran = DB::table('peserta_pelatihan')
+                ->where('pelatihan_id', $id)
+                ->where('nip', $pegawai->nip)
+                ->first();
+            
+            if ($pendaftaran) {
+                $sudahTerdaftar = true;
+                $statusPendaftaran = $pendaftaran->status;
+            }
+        }
+
+        // Cek apakah masih bisa daftar (belum H-7)
+        $bisaDaftar = true;
+        $pesanPendaftaran = '';
+        
+        if (!empty($session->tanggal_mulai)) {
+            $cutoff = Carbon::parse($session->tanggal_mulai)->startOfDay()->subDays(7);
+            if (Carbon::today()->greaterThanOrEqualTo($cutoff)) {
+                $bisaDaftar = false;
+                $pesanPendaftaran = 'Pendaftaran ditutup mulai H-7 sebelum pelatihan dimulai';
+            }
+        }
+
+        if ($session->status !== 'aktif') {
+            $bisaDaftar = false;
+            $pesanPendaftaran = 'Pendaftaran ditutup';
+        }
+
+        if ($sisaKuota <= 0) {
+            $bisaDaftar = false;
+            $pesanPendaftaran = 'Kuota sudah penuh';
+        }
+
         return view('MenuUmum.show', [
             'session'           => $session,
-            'pesertaRegistered' => $pesertaTerpakai, // var lama di blade show, isinya sekarang terpakai
+            'pesertaTerpakai'   => $pesertaTerpakai,
+            'pesertaMenunggu'   => $pesertaMenunggu,
+            'sisaKuota'         => $sisaKuota,
             'provinsis'         => $provinsis,
             'kotas'             => $kotas,
+            'sudahTerdaftar'    => $sudahTerdaftar,
+            'statusPendaftaran' => $statusPendaftaran,
+            'bisaDaftar'        => $bisaDaftar,
+            'pesanPendaftaran'  => $pesanPendaftaran,
         ]);
     }
 
@@ -145,6 +192,7 @@ class UmumPelatihanController extends Controller
     public function join(Request $request, $id)
     {
         $pegawai = Auth::guard('pegawais')->user();
+        
         if (!$pegawai) {
             return redirect()->route('pegawai.login', ['return_to' => url()->current()])
                 ->with('error', 'Silakan login sebagai pegawai terlebih dahulu.');
@@ -156,9 +204,12 @@ class UmumPelatihanController extends Controller
                 ->lockForUpdate()
                 ->first();
 
-            if (!$sesi)         return back()->with('error', 'Pelatihan tidak tersedia.');
+            if (!$sesi) {
+                return back()->with('error', 'Pelatihan tidak tersedia.');
+            }
+
             if (($sesi->status ?? '') !== 'aktif') {
-                return back()->with('error', 'Pendaftaran ditutup.');
+                return back()->with('error', 'Pendaftaran ditutup. Status pelatihan: ' . ($sesi->status ?? 'tidak aktif'));
             }
 
             // Tutup H-7
@@ -177,56 +228,69 @@ class UmumPelatihanController extends Controller
 
             // Jika sudah aktif/menunggu, jangan gandakan
             if ($existing && in_array($existing->status, ['menunggu','diterima','berjalan','menunggu_laporan','registered'])) {
-                return back()->with('info', 'Anda sudah terdaftar pada sesi ini.');
+                $statusText = [
+                    'menunggu' => 'menunggu verifikasi',
+                    'diterima' => 'diterima',
+                    'berjalan' => 'sedang berjalan',
+                    'menunggu_laporan' => 'menunggu laporan',
+                    'registered' => 'terdaftar'
+                ];
+                return back()->with('info', 'Anda sudah terdaftar pada pelatihan ini dengan status: ' . ($statusText[$existing->status] ?? $existing->status));
             }
 
             $today = Carbon::today()->toDateString();
 
-            // Blokir: ada pelatihan lain yang belum selesai (yang makan kursi)
-            $hasOtherUnfinished = DB::table('peserta_pelatihan as pp')
+            // Blokir: ada pelatihan lain yang belum selesai
+            $otherTraining = DB::table('peserta_pelatihan as pp')
                 ->join('pbj_1_pelatihans as s','s.id','=','pp.pelatihan_id')
                 ->where('pp.nip', $pegawai->nip)
-                ->whereIn('pp.status', ['diterima','berjalan','menunggu_laporan']) // hanya yang sudah diterima/berjalan
+                ->whereIn('pp.status', ['diterima','berjalan','menunggu_laporan'])
                 ->where('pp.pelatihan_id','!=',$sesi->id)
                 ->whereDate('s.tanggal_selesai','>=',$today)
-                ->exists();
-            if ($hasOtherUnfinished) {
-                return back()->with('error','Tidak bisa mendaftar: Anda masih mengikuti pelatihan lain yang belum selesai.');
+                ->select('s.nama_pelatihan', 's.tanggal_selesai')
+                ->first();
+
+            if ($otherTraining) {
+                return back()->with('error','Tidak bisa mendaftar: Anda masih mengikuti pelatihan "' . $otherTraining->nama_pelatihan . '" yang belum selesai (sampai ' . Carbon::parse($otherTraining->tanggal_selesai)->format('d/m/Y') . ')');
             }
 
-            // Blokir overlap jadwal (hanya yang sudah diterima/berjalan)
+            // Blokir overlap jadwal
             $sesiStart = $sesi->tanggal_mulai ? Carbon::parse($sesi->tanggal_mulai)->toDateString() : null;
             $sesiEnd   = $sesi->tanggal_selesai ? Carbon::parse($sesi->tanggal_selesai)->toDateString() : null;
+            
             if ($sesiStart && $sesiEnd) {
-                $hasOverlap = DB::table('peserta_pelatihan as pp')
+                $overlapTraining = DB::table('peserta_pelatihan as pp')
                     ->join('pbj_1_pelatihans as s','s.id','=','pp.pelatihan_id')
                     ->where('pp.nip',$pegawai->nip)
-                    ->whereIn('pp.status',['diterima','berjalan'])  // yang pasti aktif
+                    ->whereIn('pp.status',['diterima','berjalan'])
                     ->where('pp.pelatihan_id','!=',$sesi->id)
                     ->whereDate('s.tanggal_mulai','<=',$sesiEnd)
                     ->whereDate('s.tanggal_selesai','>=',$sesiStart)
-                    ->exists();
-                if ($hasOverlap) {
-                    return back()->with('error','Jadwal bertumpuk dengan pelatihan lain yang sudah Anda ikuti.');
+                    ->select('s.nama_pelatihan', 's.tanggal_mulai', 's.tanggal_selesai')
+                    ->first();
+
+                if ($overlapTraining) {
+                    return back()->with('error','Jadwal bertumpuk dengan pelatihan "' . $overlapTraining->nama_pelatihan . '" (' . Carbon::parse($overlapTraining->tanggal_mulai)->format('d/m/Y') . ' - ' . Carbon::parse($overlapTraining->tanggal_selesai)->format('d/m/Y') . ')');
                 }
             }
 
-            // Cek kuota pakai status makan kursi
+            // Cek kuota
             $terpakai = PesertaPelatihan::where('pelatihan_id', $sesi->id)
                 ->whereIn('status', ['diterima','berjalan','menunggu_laporan'])
                 ->lockForUpdate()
                 ->count();
+
             if (($sesi->kuota ?? 0) > 0 && $terpakai >= $sesi->kuota) {
-                return back()->with('error', 'Kuota sudah penuh.');
+                return back()->with('error', 'Kuota sudah penuh (' . $terpakai . '/' . $sesi->kuota . ')');
             }
 
-            // Simpan: status awal "menunggu" (untuk diverifikasi admin)
+            // Simpan
             if ($existing) {
-                // Jika sebelumnya ditolak/dibatalkan, izinkan ajukan ulang
                 $existing->update([
                     'status'     => 'menunggu',
                     'updated_at' => now(),
                 ]);
+                $message = 'Pengajuan pendaftaran ulang berhasil dikirim. Menunggu verifikasi admin.';
             } else {
                 PesertaPelatihan::create([
                     'pelatihan_id' => $sesi->id,
@@ -234,12 +298,13 @@ class UmumPelatihanController extends Controller
                     'nama'         => $pegawai->nama ?? null,
                     'jabatan'      => $pegawai->jabatan ?? null,
                     'unitkerja'    => optional($pegawai->unitKerja)->unitkerja ?? null,
-                    'status'       => 'menunggu', // <- kunci ke alur verifikasi admin
+                    'status'       => 'menunggu',
                 ]);
+                $message = 'Pengajuan pendaftaran berhasil dikirim. Menunggu verifikasi admin.';
             }
 
-            return back()->with('success', 'Pengajuan pendaftaran dikirim. Menunggu verifikasi admin.');
+            return redirect()->route('umum.pelatihan.show', $id)
+                ->with('success', $message);
         });
     }
-
 }

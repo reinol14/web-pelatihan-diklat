@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\PesertaPelatihan;
 use Illuminate\Support\Carbon;
+use App\Models\PegawaiProfileChange;
 
 class PegawaiDashboardController extends Controller
 {
@@ -183,10 +183,26 @@ public function index()
             'atasan:id,nip,nama,jabatan,kode_unitkerja,foto',
             'atasan.unitKerja:kode_unitkerja,unitkerja,sub_unitkerja',
         ]);
-
+        $latestChange = PegawaiProfileChange::where('pegawai_id', auth('pegawais')->id())
+    ->latest()
+    ->first();
         return view('Pegawai.profil.index', [
             'pegawai' => $pegawai,
             'atasan'  => $pegawai->atasan,
+            'latestChange' => $latestChange,    
         ]);
     }
+    
+    public function status()
+    {
+        $pegawai = auth('pegawais')->user();
+
+        $changes = PegawaiProfileChange::where('pegawai_id', $pegawai->id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('Pegawai.profil.status', compact('changes'));
+    }
+
+
 }
