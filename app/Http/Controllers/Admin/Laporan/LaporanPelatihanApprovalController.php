@@ -21,12 +21,17 @@ class LaporanPelatihanApprovalController extends Controller
         $base = DB::table('laporan_pelatihan as l')
             ->join('pbj_1_pelatihans as s', 's.id', '=', 'l.pelatihan_id')
             ->leftJoin('ref_pegawais as p', 'p.nip', '=', 'l.nip')
+            ->leftJoin('admin as a', 'a.id', '=', 'l.reviewed_by')
             ->select([
                 'l.id','l.nip','l.judul','l.status','l.keterangan','l.created_at','l.updated_at',
                 DB::raw('l.file_path as file_path'),
                 DB::raw('l.sertifikat as sertifikat'),
+                DB::raw('l.reviewed_by'),
+                DB::raw('l.reviewed_at'),
                 's.nama_pelatihan',
                 'p.nama as nama_pegawai','p.kode_unitkerja',
+                DB::raw('a.name as reviewer_name'),
+                DB::raw('a.is_admin as reviewer_is_admin'),
             ]);
 
         if ($status) {
@@ -68,8 +73,12 @@ class LaporanPelatihanApprovalController extends Controller
     public function approve(Request $request, $id)
     {
         $keterangan = $request->filled('keterangan') ? trim($request->input('keterangan')) : null;
+        
+        // Dapatkan ID admin yang sedang login
+        $user = Auth::guard('web')->user();
+        $reviewedBy = $user ? $user->id : null;
 
-        DB::transaction(function() use ($id, $keterangan) {
+        DB::transaction(function() use ($id, $keterangan, $reviewedBy) {
             // Set laporan => approved + simpan catatan
             $lap = DB::table('laporan_pelatihan')->where('id',$id)->lockForUpdate()->first();
             if (!$lap) abort(404);
@@ -77,6 +86,8 @@ class LaporanPelatihanApprovalController extends Controller
             DB::table('laporan_pelatihan')->where('id',$id)->update([
                 'status'      => 'approved',
                 'keterangan'  => $keterangan,
+                'reviewed_by' => $reviewedBy,
+                'reviewed_at' => now(),
                 'updated_at'  => now(),
             ]);
 
@@ -96,14 +107,20 @@ class LaporanPelatihanApprovalController extends Controller
     public function reject(Request $request, $id)
     {
         $keterangan = $request->filled('keterangan') ? trim($request->input('keterangan')) : null;
+        
+        // Dapatkan ID admin yang sedang login
+        $user = Auth::guard('web')->user();
+        $reviewedBy = $user ? $user->id : null;
 
-        DB::transaction(function() use ($id, $keterangan) {
+        DB::transaction(function() use ($id, $keterangan, $reviewedBy) {
             $lap = DB::table('laporan_pelatihan')->where('id',$id)->lockForUpdate()->first();
             if (!$lap) abort(404);
 
             DB::table('laporan_pelatihan')->where('id',$id)->update([
                 'status'      => 'rejected',
                 'keterangan'  => $keterangan,
+                'reviewed_by' => $reviewedBy,
+                'reviewed_at' => now(),
                 'updated_at'  => now(),
             ]);
             // status peserta tetap "menunggu_laporan" (tidak diubah)

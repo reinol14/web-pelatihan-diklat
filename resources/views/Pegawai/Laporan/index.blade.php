@@ -104,6 +104,11 @@
                   @if($wajibKirim && $status === 'belum')
                     <div class="small text-danger mt-1">* Wajib kirim laporan</div>
                   @endif
+                  @if($status === 'rejected' && !empty($it->keterangan))
+                    <div class="small text-danger mt-2">
+                      <strong>Alasan:</strong> {{ $it->keterangan }}
+                    </div>
+                  @endif
                 </td>
                 <td class="text-end">
                   @if($status === 'belum' && $wajibKirim)

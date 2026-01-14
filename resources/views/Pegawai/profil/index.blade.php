@@ -137,6 +137,7 @@
       <table class="table table-sm">
         <tr><th>Nama</th><td>{{ $nama }}</td></tr>
         <tr><th>NIP</th><td>{{ $nip }}</td></tr>
+        <tr><th>Tempat Lahir</th><td>{{ $pegawai?->tempat_lahir ?? '-' }}</td></tr>
         <tr><th>Tgl Lahir</th><td>{{ $tglLahir }}</td></tr>
         <tr><th>Email</th><td>{{ $pegawai?->email ?? '-' }}</td></tr>
         <tr><th>No HP</th><td>{{ $pegawai?->no_hp ?? '-' }}</td></tr>

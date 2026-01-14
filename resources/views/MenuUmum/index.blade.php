@@ -115,14 +115,48 @@
 {{-- LIST --}}
 <section id="list" class="py-3 py-md-4">
   <div class="container">
-    <div class="row g-3 g-md-4">
+    @php
+      $hasOngoing      = $hasOngoing      ?? false;
+      $myRegisteredIds = $myRegisteredIds ?? [];
+      
+      // Pisahkan pelatihan aktif dan tutup
+      $pelatihanAktif = collect();
+      $pelatihanTutup = collect();
+      
+      foreach($trainings as $training) {
+        $kuota    = (int)($training->kuota ?? 0);
+        $terpakai = (int)($training->peserta_terpakai ?? $training->peserta_registered ?? 0);
+        $statusRaw  = $training->status ?? 'aktif';
+        $mulai      = !empty($training->tanggal_mulai) ? \Illuminate\Support\Carbon::parse($training->tanggal_mulai) : null;
+        
+        $isHMinus7Closed = false;
+        if ($mulai) {
+          $cutoff = $mulai->copy()->startOfDay()->subDays(7);
+          $isHMinus7Closed = now()->startOfDay()->greaterThanOrEqualTo($cutoff);
+        }
+        
+        $isKuotaFull = $kuota > 0 && $terpakai >= $kuota;
+        $isClosed = ($statusRaw !== 'aktif') || $isHMinus7Closed || $isKuotaFull;
+        
+        if ($isClosed) {
+          $pelatihanTutup->push($training);
+        } else {
+          $pelatihanAktif->push($training);
+        }
+      }
+    @endphp
 
-      @php
-        $hasOngoing      = $hasOngoing      ?? false;
-        $myRegisteredIds = $myRegisteredIds ?? [];
-      @endphp
-
-      @forelse($trainings as $training)
+    {{-- SECTION: PELATIHAN AKTIF --}}
+    @if($pelatihanAktif->isNotEmpty())
+    <div class="mb-5">
+      <div class="d-flex align-items-center mb-3">
+        <h2 class="h4 mb-0 me-2">
+          <i class="bi bi-check-circle-fill text-success me-2"></i>Pelatihan Aktif
+        </h2>
+        <span class="badge bg-success rounded-pill">{{ $pelatihanAktif->count() }}</span>
+      </div>
+      <div class="row g-3 g-md-4">
+        @foreach($pelatihanAktif as $training)
         @php
           $kuota    = (int)($training->kuota ?? 0);
           $terpakai = (int)($training->peserta_terpakai ?? $training->peserta_registered ?? 0);
@@ -251,20 +285,149 @@
             </div>
           </article>
         </div>
-      @empty
-        <div class="col-12">
-          <div class="empty text-center">
-            <div class="display-6 mb-2" aria-hidden="true">😕</div>
-            <h5 class="mb-1">Belum ada pelatihan tersedia</h5>
-            <p class="text-muted mb-3">Coba ubah kata kunci atau filter. Pelatihan baru ditambahkan secara berkala.</p>
-            <a href="{{ url()->current() }}" class="btn btn-outline-secondary">
-              <i class="bi bi-arrow-counterclockwise me-1"></i> Muat ulang
-            </a>
-          </div>
-        </div>
-      @endforelse
+        @endforeach
+      </div>
     </div>
+    @endif
 
+    {{-- SECTION: PELATIHAN TUTUP --}}
+    @if($pelatihanTutup->isNotEmpty())
+    <div class="mb-4">
+      <div class="d-flex align-items-center mb-3">
+        <h2 class="h4 mb-0 me-2">
+          <i class="bi bi-x-circle-fill text-secondary me-2"></i>Pelatihan Tutup
+        </h2>
+        <span class="badge bg-secondary rounded-pill">{{ $pelatihanTutup->count() }}</span>
+      </div>
+      <div class="row g-3 g-md-4">
+        @foreach($pelatihanTutup as $training)
+        @php
+          $kuota    = (int)($training->kuota ?? 0);
+          $terpakai = (int)($training->peserta_terpakai ?? $training->peserta_registered ?? 0);
+          $sisa       = $kuota > 0 ? max(0, $kuota - $terpakai) : null;
+          $statusRaw  = $training->status ?? 'aktif';
+          $jenis      = $training->jenis_pelatihan ?? '-';
+          $lokasi     = $training->lokasi ?? null;
+          $mulai      = !empty($training->tanggal_mulai)   ? \Illuminate\Support\Carbon::parse($training->tanggal_mulai)   : null;
+          $selesai    = !empty($training->tanggal_selesai) ? \Illuminate\Support\Carbon::parse($training->tanggal_selesai) : null;
+          $tglMulai   = $mulai   ? $mulai->isoFormat('D MMM Y')   : null;
+          $tglSelesai = $selesai ? $selesai->isoFormat('D MMM Y') : null;
+          $rentangTanggal = $tglMulai && $tglSelesai ? "{$tglMulai} – {$tglSelesai}" : ($tglMulai ?? ($tglSelesai ?? '-'));
+          $deskripsi = \Illuminate\Support\Str::limit($training->informasi_pelatihan ?? $training->detail_pelatihan ?? $training->deskripsi ?? '', 140);
+          
+          $level = 'high';
+          if ($kuota > 0) {
+            $ratio = $terpakai / max(1,$kuota);
+            $level = $ratio >= .9 ? 'low' : ($ratio >= .65 ? 'mid' : 'high');
+          }
+
+          $alreadyRegistered       = in_array($training->id, $myRegisteredIds);
+          $blockBecauseOngoingRule = ($hasOngoing && !$alreadyRegistered);
+
+          $isHMinus7Closed = false;
+          if ($mulai) {
+            $cutoff = $mulai->copy()->startOfDay()->subDays(7);
+            $isHMinus7Closed = now()->startOfDay()->greaterThanOrEqualTo($cutoff);
+          }
+
+          $isKuotaFull = $kuota > 0 && $terpakai >= $kuota;
+          $isClosed     = ($statusRaw !== 'aktif') || $isHMinus7Closed || $isKuotaFull;
+          $statusLabel  = $isClosed ? 'close' : 'aktif';
+          $statusClass  = $isClosed ? 'status-tutup' : 'status-aktif';
+
+          $disableReason = null;
+          if ($isKuotaFull) {
+            $disableReason = 'Kuota penuh';
+          } elseif ($statusRaw !== 'aktif') {
+            $disableReason = 'Pendaftaran ditutup';
+          } elseif ($isHMinus7Closed) {
+            $disableReason = 'Pendaftaran ditutup mulai H-7';
+          } elseif ($blockBecauseOngoingRule) {
+            $disableReason = 'Anda sedang mengikuti pelatihan lain';
+          }
+        @endphp
+
+        <div class="col-12 col-md-6 col-xl-4">
+          <article class="card course-card h-100" aria-labelledby="title-{{ $training->id }}" style="opacity: 0.85;">
+            <header class="course-head">
+              <h2 class="h6 mb-0" id="title-{{ $training->id }}" title="{{ $training->nama_pelatihan ?? '-' }}">
+                <i class="bi bi-journal-text me-1"></i> {{ $training->nama_pelatihan ?? '-' }}
+              </h2>
+              <span class="status-pill {{ $statusClass }}">
+                <i class="bi bi-activity me-1"></i>{{ $statusLabel }}
+              </span>
+            </header>
+
+            <div class="card-body d-flex flex-column">
+              <div class="meta mb-2">
+                <span class="chip" title="Jenis Pelatihan"><i class="bi bi-layers"></i> {{ $jenis }}</span>
+                <span class="chip" title="Jadwal"><i class="bi bi-calendar-event"></i> {{ $rentangTanggal }}</span>
+                @if($lokasi)
+                  <span class="chip" title="Lokasi"><i class="bi bi-geo-alt"></i> {{ $lokasi }}</span>
+                @endif
+                @if($isHMinus7Closed)
+                  <span class="chip" title="Pendaftaran ditutup H-7"><i class="bi bi-lock"></i> H-7 ditutup</span>
+                @endif
+              </div>
+
+              @if($deskripsi)
+                <p class="text-secondary mb-3 text-truncate-2 small">{{ $deskripsi }}</p>
+              @endif
+
+              <div class="card-actions mt-auto">
+                <div class="card-actions-row">
+                  <span class="badge badge-cap" data-level="{{ $level }}" title="Terpakai / Kuota">
+                    <i class="bi bi-people me-1"></i>
+                    {{ $kuota > 0 ? "{$terpakai}/{$kuota}" : 'Tanpa Batas' }}
+                  </span>
+
+                  <div class="card-actions-buttons">
+                    @if(!empty($training->file_pelatihan))
+                      <a class="btn btn-outline-success btn-sm" target="_blank" rel="noopener"
+                         href="{{ asset('storage/' . ltrim($training->file_pelatihan,'/')) }}" 
+                         aria-label="Buka file pelatihan" data-bs-toggle="tooltip" title="Berkas">
+                        <i class="bi bi-file-earmark-text"></i>
+                      </a>
+                    @endif
+
+                    <a href="{{ route('Pelatihan.show', ['id' => $training->id]) }}"
+                       class="btn btn-outline-primary btn-sm" aria-label="Lihat detail" 
+                       data-bs-toggle="tooltip" title="Detail">
+                      <i class="bi bi-eye"></i>
+                    </a>
+
+                    <button type="button" class="btn btn-secondary btn-sm full" disabled
+                            data-bs-toggle="tooltip" title="{{ $disableReason }}">
+                      Ditutup
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+        @endforeach
+      </div>
+    </div>
+    @endif
+
+    {{-- Empty State --}}
+    @if($pelatihanAktif->isEmpty() && $pelatihanTutup->isEmpty())
+    <div class="row">
+      <div class="col-12">
+        <div class="empty text-center">
+          <div class="display-6 mb-2" aria-hidden="true">😕</div>
+          <h5 class="mb-1">Belum ada pelatihan tersedia</h5>
+          <p class="text-muted mb-3">Coba ubah kata kunci atau filter. Pelatihan baru ditambahkan secara berkala.</p>
+          <a href="{{ url()->current() }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Muat ulang
+          </a>
+        </div>
+      </div>
+    </div>
+    @endif
+
+    {{-- Pagination --}}
     @if($trainings instanceof \Illuminate\Contracts\Pagination\Paginator || $trainings instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
       <nav class="mt-4 d-flex justify-content-center" aria-label="Pagination">
         {{ $trainings->fragment('list')->onEachSide(1)->links('pagination::bootstrap-5') }}

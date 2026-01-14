@@ -45,6 +45,7 @@ class LaporanPelatihanController extends Controller
                 // status_laporan: belum/pending/approved/rejected
                 DB::raw("CASE WHEN l.id IS NULL THEN 'belum' ELSE l.status END AS status_laporan"),
                 DB::raw("l.id AS laporan_id"),
+                DB::raw("l.keterangan AS keterangan"),
             ])
             ->orderByRaw("CASE WHEN pp.status = 'menunggu_laporan' THEN 0 ELSE 1 END")
             ->orderBy('s.tanggal_selesai')
@@ -133,7 +134,7 @@ public function store(Request $request, $id)
     $data = $request->validate([
         'judul'      => 'required|string|max:150',
         'ringkasan'  => 'required|string|max:5000',
-        'file'       => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+        'file'       => 'required|file|mimes:pdf,doc,docx|max:5120',
         'sertifikat' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
     ]);
 

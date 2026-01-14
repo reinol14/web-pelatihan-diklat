@@ -1,205 +1,297 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
-  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-    <h3 class="mb-0">Verifikasi Laporan Pelatihan</h3>
+<div class="container-fluid py-4">
+  {{-- Header Section --}}
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+          <h3 class="mb-1"><i class="bi bi-clipboard-check me-2"></i>Verifikasi Laporan Pelatihan</h3>
+          <p class="text-muted mb-0 small">Kelola dan verifikasi laporan pelatihan yang diajukan pegawai</p>
+        </div>
 
-    <div class="d-flex gap-2">
-      <a href="{{ route('Admin.Laporan.approval.index',['status'=>'pending']) }}"  class="btn btn-sm btn-warning">Pending ({{ $counts['pending'] ?? 0 }})</a>
-      <a href="{{ route('Admin.Laporan.approval.index',['status'=>'approved']) }}" class="btn btn-sm btn-success">Approved ({{ $counts['approved'] ?? 0 }})</a>
-      <a href="{{ route('Admin.Laporan.approval.index',['status'=>'rejected']) }}" class="btn btn-sm btn-secondary">Rejected ({{ $counts['rejected'] ?? 0 }})</a>
-      <a href="{{ route('Admin.Laporan.approval.index') }}" class="btn btn-sm btn-outline-secondary">Semua</a>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{{ route('Admin.Laporan.approval.index',['status'=>'pending']) }}"  
+             class="btn btn-sm {{ request('status') === 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
+            <i class="bi bi-clock-history me-1"></i> Pending 
+            <span class="badge bg-white text-warning ms-1">{{ $counts['pending'] ?? 0 }}</span>
+          </a>
+          <a href="{{ route('Admin.Laporan.approval.index',['status'=>'approved']) }}" 
+             class="btn btn-sm {{ request('status') === 'approved' ? 'btn-success' : 'btn-outline-success' }}">
+            <i class="bi bi-check-circle me-1"></i> Disetujui
+            <span class="badge bg-white text-success ms-1">{{ $counts['approved'] ?? 0 }}</span>
+          </a>
+          <a href="{{ route('Admin.Laporan.approval.index',['status'=>'rejected']) }}" 
+             class="btn btn-sm {{ request('status') === 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
+            <i class="bi bi-x-circle me-1"></i> Ditolak
+            <span class="badge bg-white text-danger ms-1">{{ $counts['rejected'] ?? 0 }}</span>
+          </a>
+          <a href="{{ route('Admin.Laporan.approval.index') }}" 
+             class="btn btn-sm {{ !request('status') ? 'btn-secondary' : 'btn-outline-secondary' }}">
+            <i class="bi bi-list-ul me-1"></i> Semua
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
-  {{-- Flash --}}
-  @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-  @if(session('error'))   <div class="alert alert-danger">{{ session('error') }}</div> @endif
-  @if(session('info'))    <div class="alert alert-info">{{ session('info') }}</div> @endif
-
-  {{-- Bar pencarian + offcanvas filter --}}
-  <form method="GET" action="{{ url()->current() }}" class="d-flex align-items-stretch gap-2 mb-3" id="mainFilterForm">
-    <div class="input-group">
-      <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-      <input type="text" name="q" class="form-control" placeholder="Cari: Nama pelatihan / Pegawai / NIP"
-             value="{{ request('q') }}">
+  {{-- Flash Messages --}}
+  @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-    <button class="btn btn-primary" type="submit"><i class="bi bi-funnel me-1"></i> Terapkan</button>
-    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#ocFilter" aria-controls="ocFilter">
-      Opsi Filter
-    </button>
-    @if(request()->hasAny(['q','status','date_from','date_to']))
-      <a href="{{ url()->current() }}" class="btn btn-outline-dark">Reset</a>
+  @endif
+  @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  @endif
+  @if(session('info'))
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      <i class="bi bi-info-circle-fill me-2"></i>{{ session('info') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  @endif
+
+  {{-- Search & Filter Bar --}}
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <form method="GET" action="{{ url()->current() }}" id="mainFilterForm">
+        <div class="row g-2">
+          <div class="col-md-6 col-lg-8">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search"></i>
+              </span>
+              <input type="text" name="q" class="form-control border-start-0 ps-0" 
+                     placeholder="Cari: Nama pelatihan, nama pegawai, atau NIP..."
+                     value="{{ request('q') }}">
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary flex-grow-1" type="submit">
+                <i class="bi bi-search me-1"></i> Cari
+              </button>
+              <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" 
+                      data-bs-target="#ocFilter" aria-controls="ocFilter">
+                <i class="bi bi-sliders me-1"></i> Filter
+              </button>
+              @if(request()->hasAny(['q','status','date_from','date_to']))
+                <a href="{{ url()->current() }}" class="btn btn-outline-danger" title="Reset Filter">
+                  <i class="bi bi-x-circle"></i>
+                </a>
+              @endif
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {{-- Table --}}
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="px-4" style="width: 50px;">#</th>
+              <th style="width: 180px;">Pegawai</th>
+              <th style="width: 200px;">Pelatihan</th>
+              <th>Judul Laporan</th>
+              <th class="text-center" style="width: 100px;">Berkas</th>
+              <th class="text-center" style="width: 130px;">Status</th>
+              <th class="text-center" style="width: 200px;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+          <tbody>
+          @forelse($items as $row)
+            @php
+              $badge = $row->status==='pending' ? 'warning' : ($row->status==='approved' ? 'success' : 'danger');
+              $badgeIcon = $row->status==='pending' ? 'clock-history' : ($row->status==='approved' ? 'check-circle-fill' : 'x-circle-fill');
+              $badgeText = $row->status==='pending' ? 'Pending' : ($row->status==='approved' ? 'Disetujui' : 'Ditolak');
+              $fileUrl = $row->file_path ? ( \Illuminate\Support\Str::startsWith($row->file_path,'storage/') ? asset($row->file_path) : asset('storage/'.ltrim($row->file_path,'/')) ) : null;
+              $sertifikat = $row->sertifikat ? ( \Illuminate\Support\Str::startsWith($row->sertifikat,'storage/') ? asset($row->sertifikat) : asset('storage/'.ltrim($row->sertifikat,'/')) ) : null;
+            @endphp
+            <tr>
+              <td class="px-4 text-muted">{{ ($items->firstItem() ?? 1) + $loop->index }}</td>
+              <td>
+                <div class="fw-semibold text-dark">{{ $row->nama_pegawai ?? '-' }}</div>
+                <small class="text-muted"><i class="bi bi-person-badge me-1"></i>{{ $row->nip }}</small>
+              </td>
+              <td>
+                <div class="text-dark">{{ \Illuminate\Support\Str::limit($row->nama_pelatihan, 50) }}</div>
+              </td>
+              <td>
+                <div class="fw-medium">{{ \Illuminate\Support\Str::limit($row->judul, 60) }}</div>
+              </td>
+              <td class="text-center">
+                <div class="d-flex gap-1 justify-content-center">
+                  @if($fileUrl)
+                    <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary" 
+                       data-bs-toggle="tooltip" title="Lihat Lampiran">
+                      <i class="bi bi-file-earmark-pdf"></i>
+                    </a>
+                  @else
+                    <span class="text-muted">-</span>
+                  @endif
+                  
+                  @if($sertifikat)
+                    <a href="{{ $sertifikat }}" target="_blank" class="btn btn-sm btn-outline-info" 
+                       data-bs-toggle="tooltip" title="Lihat Sertifikat">
+                      <i class="bi bi-award"></i>
+                    </a>
+                  @endif
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-{{ $badge }} d-inline-flex align-items-center">
+                  <i class="bi bi-{{ $badgeIcon }} me-1"></i>{{ $badgeText }}
+                </span>
+                @if($row->keterangan)
+                  <div class="small text-muted mt-2" style="max-width: 120px;">
+                    <i class="bi bi-chat-left-text me-1"></i>
+                    <span data-bs-toggle="tooltip" title="{{ $row->keterangan }}">
+                      {{ \Illuminate\Support\Str::limit($row->keterangan, 30) }}
+                    </span>
+                  </div>
+                @endif
+                @if($row->reviewed_by && $row->reviewed_at)
+                  <div class="small text-muted mt-2">
+                    <i class="bi bi-person-check me-1"></i>
+                    <span data-bs-toggle="tooltip" title="Diverifikasi oleh: {{ $row->reviewer_name ?? 'Admin' }} ({{ $row->reviewer_is_admin == 1 ? 'Superadmin' : 'Admin Unit' }}) pada {{ \Carbon\Carbon::parse($row->reviewed_at)->isoFormat('D MMM Y, HH:mm') }}">
+                      {{ \Illuminate\Support\Str::limit($row->reviewer_name ?? 'Admin', 15) }}
+                    </span>
+                  </div>
+                @endif
+              </td>
+              <td class="text-center">
+                @if($row->status === 'pending')
+                  <div class="d-flex gap-1 justify-content-center">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-success btn-open-modal"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalDecision"
+                      data-id="{{ $row->id }}"
+                      data-action="approve"
+                      data-title="Setujui Laporan"
+                      data-label="Catatan persetujuan (opsional)"
+                      title="Setujui">
+                      <i class="bi bi-check-circle me-1"></i> Setujui
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-danger btn-open-modal"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalDecision"
+                      data-id="{{ $row->id }}"
+                      data-action="reject"
+                      data-title="Tolak Laporan"
+                      data-label="Alasan penolakan (wajib)"
+                      title="Tolak">
+                      <i class="bi bi-x-circle me-1"></i> Tolak
+                    </button>
+                  </div>
+                @elseif($row->status === 'approved')
+                  <span class="badge bg-success bg-opacity-10 text-success px-3 py-2">
+                    <i class="bi bi-check-circle-fill me-1"></i> Sudah Disetujui
+                  </span>
+                @else
+                  <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2">
+                    <i class="bi bi-x-circle-fill me-1"></i> Sudah Ditolak
+                  </span>
+                @endif
+              </td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <div class="text-muted">
+                  <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                  <p class="mb-0">Tidak ada data laporan ditemukan</p>
+                </div>
+              </td>
+            </tr>
+          @endforelse
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    @if($items->hasPages())
+      <div class="card-footer bg-white border-top">
+        <div class="d-flex justify-content-center">
+          {{ $items->appends(request()->query())->links('pagination::bootstrap-5') }}
+        </div>
+      </div>
     @endif
-  </form>
-
-  {{-- Tabel --}}
-  <div class="table-responsive">
-    <table class="table table-hover align-middle">
-      <thead class="table-light">
-      <tr>
-        <th>#</th>
-        <th>Pegawai</th>
-        <th>Pelatihan</th>
-        <th>Judul Laporan</th>
-        <th>Lampiran</th>
-        <th>Sertifikat</th>
-        <th>Status</th>
-        <th class="text-end">Aksi</th>
-      </tr>
-      </thead>
-      <tbody>
-      @forelse($items as $row)
-        @php
-          $badge = $row->status==='pending' ? 'warning' : ($row->status==='approved' ? 'success' : 'secondary');
-          $fileUrl = $row->file_path ? ( \Illuminate\Support\Str::startsWith($row->file_path,'storage/') ? asset($row->file_path) : asset('storage/'.ltrim($row->file_path,'/')) ) : null;
-          $sertifikat = $row->sertifikat ? ( \Illuminate\Support\Str::startsWith($row->sertifikat,'storage/') ? asset($row->sertifikat) : asset('storage/'.ltrim($row->sertifikat,'/')) ) : null;
-        @endphp
-        <tr>
-          <td>{{ ($items->firstItem() ?? 1) + $loop->index }}</td>
-          <td>
-            {{ $row->nama_pegawai ?? '-' }}<br>
-            <small class="text-muted">NIP: {{ $row->nip }}</small>
-          </td>
-          <td>{{ $row->nama_pelatihan }}</td>
-          <td>{{ $row->judul }}</td>
-          <td>
-            @if($fileUrl)
-              <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-success">
-                <i class="bi bi-file-earmark-text me-1"></i> Lampiran
-              </a>
-            @else
-              <span class="text-muted">-</span>
-            @endif
-          </td>
-          <td>
-            @if($sertifikat)
-              <a href="{{ $sertifikat }}" target="_blank" class="btn btn-sm btn-outline-success">
-                <i class="bi bi-file-earmark-text me-1"></i> Sertifikat
-              </a>
-            @else
-              <span class="text-muted">-</span>
-            @endif
-          </td>
-          <td>
-            <span class="badge text-bg-{{ $badge }}">{{ ucfirst($row->status) }}</span>
-            @if($row->keterangan)
-              <div class="small text-muted mt-1">Catatan: {{ $row->keterangan }}</div>
-            @endif
-
-          <td class="text-end">
-            @if($row->status === 'pending')
-              <button
-                type="button"
-                class="btn btn-sm btn-success btn-open-modal"
-                data-bs-toggle="modal"
-                data-bs-target="#modalDecision"
-                data-id="{{ $row->id }}"
-                data-action="approve"
-                data-title="Setujui Laporan"
-                data-label="Alasan persetujuan (opsional)">
-                <i class="bi bi-check2-circle me-1"></i> Approve
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-sm btn-danger btn-open-modal"
-                data-bs-toggle="modal"
-                data-bs-target="#modalDecision"
-                data-id="{{ $row->id }}"
-                data-action="reject"
-                data-title="Tolak Laporan"
-                data-label="Alasan penolakan (opsional)">
-                <i class="bi bi-x-circle me-1"></i> Reject
-              </button>
-            @elseif($row->status === 'approved')
-              <button class="btn btn-sm btn-outline-success" disabled>
-                <i class="bi bi-check2-circle me-1"></i> Approved
-              </button>
-            @else
-              <button class="btn btn-sm btn-outline-secondary" disabled>
-                <i class="bi bi-x-circle me-1"></i> Rejected
-              </button>
-            @endif
-          </td>
-
-        </tr>
-      @empty
-        <tr><td colspan="8" class="text-center text-muted">Tidak ada data.</td></tr>
-      @endforelse
-      </tbody>
-    </table>
-  </div>
-
-  <div class="mt-3">
-    {{ $items->appends(request()->query())->links('pagination::bootstrap-5') }}
   </div>
 </div>
 
 {{-- Offcanvas Filter --}}
 <div class="offcanvas offcanvas-end" tabindex="-1" id="ocFilter" aria-labelledby="ocFilterLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="ocFilterLabel">Opsi Filter</h5>
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title" id="ocFilterLabel">
+      <i class="bi bi-sliders me-2"></i>Filter Lanjutan
+    </h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Tutup"></button>
   </div>
   <div class="offcanvas-body">
     <form method="GET" action="{{ url()->current() }}">
-      <div class="mb-3">
-        <label class="form-label">Status</label>
+      <div class="mb-4">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-flag me-1"></i> Status Laporan
+        </label>
         <select name="status" class="form-select">
-          <option value="">Semua</option>
-          <option value="pending"  @selected(request('status')==='pending')>Pending</option>
-          <option value="approved" @selected(request('status')==='approved')>Approved</option>
-          <option value="rejected" @selected(request('status')==='rejected')>Rejected</option>
+          <option value="">Semua Status</option>
+          <option value="pending"  @selected(request('status')==='pending')>⏳ Pending</option>
+          <option value="approved" @selected(request('status')==='approved')>✅ Disetujui</option>
+          <option value="rejected" @selected(request('status')==='rejected')>❌ Ditolak</option>
         </select>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Kata Kunci</label>
-        <input type="text" name="q" class="form-control" placeholder="Nama pelatihan / pegawai / NIP" value="{{ request('q') }}">
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-search me-1"></i> Kata Kunci
+        </label>
+        <input type="text" name="q" class="form-control" 
+               placeholder="Nama pelatihan, pegawai, atau NIP" 
+               value="{{ request('q') }}">
+        <div class="form-text">Cari berdasarkan nama pelatihan, nama pegawai, atau NIP</div>
       </div>
-      <div class="row g-2">
-        <div class="col-sm-6">
-          <label class="form-label">Dari</label>
-          <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
-        </div>
-        <div class="col-sm-6">
-          <label class="form-label">Sampai</label>
-          <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-calendar-range me-1"></i> Periode Pengajuan
+        </label>
+        <div class="row g-2">
+          <div class="col-6">
+            <label class="form-label small text-muted">Dari Tanggal</label>
+            <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
+          </div>
+          <div class="col-6">
+            <label class="form-label small text-muted">Sampai Tanggal</label>
+            <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
+          </div>
         </div>
       </div>
-      <div class="d-flex justify-content-between align-items-center mt-4">
-        <a href="{{ url()->current() }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise me-1"></i> Reset</a>
+
+      <div class="border-top pt-3 mt-auto">
         <div class="d-flex gap-2">
-          <button type="button" class="btn btn-light" data-bs-dismiss="offcanvas">Tutup</button>
-          <button type="submit" class="btn btn-primary"><i class="bi bi-funnel me-1"></i> Terapkan</button>
+          <a href="{{ url()->current() }}" class="btn btn-outline-secondary flex-grow-1">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+          </a>
+          <button type="submit" class="btn btn-primary flex-grow-1">
+            <i class="bi bi-funnel me-1"></i> Terapkan
+          </button>
         </div>
-      </div>
-    </form>
-  </div>
-</div>
-{{-- Modal Keputusan --}}
-<div class="modal fade" id="modalDecision" tabindex="-1" aria-labelledby="modalDecisionLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form method="POST" id="formDecision" class="modal-content">
-      @csrf
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalDecisionLabel">Keputusan</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-      </div>
-
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label" id="reasonLabel">Alasan (opsional)</label>
-          <textarea name="keterangan" class="form-control" rows="3"
-                    placeholder="Tulis alasan bila perlu (opsional)"></textarea>
-          <div class="form-text">Kosongkan bila tidak ada catatan.</div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="submit" class="btn btn-primary" id="btnDecisionSubmit">Simpan</button>
       </div>
     </form>
   </div>
@@ -207,22 +299,39 @@
 
 {{-- Modal Keputusan --}}
 <div class="modal fade" id="modalDecision" tabindex="-1" aria-labelledby="modalDecisionLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <form method="POST" id="formDecision" class="modal-content">
       @csrf
       <div class="modal-header">
-        <h5 class="modal-title" id="modalDecisionLabel">Keputusan</h5>
+        <h5 class="modal-title" id="modalDecisionLabel">
+          <i class="bi bi-check-circle me-2"></i>Keputusan Verifikasi
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
       </div>
+
       <div class="modal-body">
+        <div class="alert alert-info mb-3">
+          <i class="bi bi-info-circle me-2"></i>
+          <small>Berikan catatan atau alasan untuk keputusan Anda</small>
+        </div>
+
         <div class="mb-3">
-          <label class="form-label" id="reasonLabel">Alasan (opsional)</label>
-          <textarea name="keterangan" class="form-control" rows="3" placeholder="Tulis alasan jika perlu"></textarea>
+          <label class="form-label fw-semibold" id="reasonLabel">Catatan/Alasan</label>
+          <textarea name="keterangan" class="form-control" rows="4"
+                    placeholder="Tulis catatan atau alasan di sini..."></textarea>
+          <div class="form-text" id="reasonHelp">
+            Untuk penolakan, sebaiknya berikan alasan yang jelas agar pegawai dapat memperbaiki laporan.
+          </div>
         </div>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="submit" class="btn btn-primary" id="btnDecisionSubmit">Simpan</button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x me-1"></i> Batal
+        </button>
+        <button type="submit" class="btn btn-primary" id="btnDecisionSubmit">
+          <i class="bi bi-check-circle me-1"></i> Simpan Keputusan
+        </button>
       </div>
     </form>
   </div>
@@ -232,70 +341,71 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-  const modal = document.getElementById('modalDecision');
-  const form  = document.getElementById('formDecision');
-  const label = document.getElementById('reasonLabel');
-  const title = document.getElementById('modalDecisionLabel');
-  const btn   = document.getElementById('btnDecisionSubmit');
-
-  modal?.addEventListener('show.bs.modal', function (e) {
-    const tr = e.relatedTarget;
-    if (!tr) return;
-    const id     = tr.getAttribute('data-id');
-    const action = tr.getAttribute('data-action'); // approve | reject
-    const mtitle = tr.getAttribute('data-title') || 'Keputusan';
-    const mlabel = tr.getAttribute('data-label') || 'Alasan (opsional)';
-
-    // Set title + label
-    title.textContent = mtitle;
-    label.textContent = mlabel;
-
-    // Set form action sesuai tombol
-    if (action === 'approve') {
-      form.action = "{{ route('Admin.Laporan.approval.approve', ':id') }}".replace(':id', id);
-      btn.classList.remove('btn-danger'); btn.classList.add('btn-primary');
-      btn.textContent = 'Setujui';
-    } else {
-      form.action = "{{ route('Admin.Laporan.approval.reject', ':id') }}".replace(':id', id);
-      btn.classList.remove('btn-primary'); btn.classList.add('btn-danger');
-      btn.textContent = 'Tolak';
-    }
+  // Initialize tooltips
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
   });
-});
-</script>
-@endpush
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function(){
+
   const modal = document.getElementById('modalDecision');
   const form  = document.getElementById('formDecision');
   const label = document.getElementById('reasonLabel');
   const title = document.getElementById('modalDecisionLabel');
   const btn   = document.getElementById('btnDecisionSubmit');
+  const reasonHelp = document.getElementById('reasonHelp');
 
   modal?.addEventListener('show.bs.modal', function (e) {
-    const trg = e.relatedTarget; if (!trg) return;
+    const trg = e.relatedTarget;
+    if (!trg) return;
+    
     const id     = trg.getAttribute('data-id');
     const action = trg.getAttribute('data-action'); // approve | reject
-    const mtitle = trg.getAttribute('data-title') || 'Keputusan';
-    const mlabel = trg.getAttribute('data-label') || 'Alasan (opsional)';
+    const mtitle = trg.getAttribute('data-title') || 'Keputusan Verifikasi';
+    const mlabel = trg.getAttribute('data-label') || 'Catatan/Alasan';
 
-    // set judul & label
-    title.textContent = mtitle;
+    // Set title & label
+    title.innerHTML = action === 'approve' 
+      ? '<i class="bi bi-check-circle me-2 text-success"></i>' + mtitle
+      : '<i class="bi bi-x-circle me-2 text-danger"></i>' + mtitle;
     label.textContent = mlabel;
 
-    // reset textarea
+    // Reset textarea
     form.querySelector('textarea[name="keterangan"]').value = '';
 
-    // set action + gaya tombol submit
+    // Update help text based on action
+    if (action === 'reject') {
+      reasonHelp.innerHTML = '<strong>Wajib:</strong> Berikan alasan penolakan yang jelas agar pegawai dapat memperbaiki laporan.';
+      reasonHelp.classList.remove('text-muted');
+      reasonHelp.classList.add('text-danger');
+    } else {
+      reasonHelp.innerHTML = 'Opsional: Anda dapat memberikan catatan tambahan untuk persetujuan ini.';
+      reasonHelp.classList.remove('text-danger');
+      reasonHelp.classList.add('text-muted');
+    }
+
+    // Set action & button style
     if (action === 'approve') {
       form.action = "{{ route('Admin.Laporan.approval.approve', ':id') }}".replace(':id', id);
-      btn.classList.remove('btn-danger'); btn.classList.add('btn-primary');
-      btn.textContent = 'Setujui';
+      btn.className = 'btn btn-success';
+      btn.innerHTML = '<i class="bi bi-check-circle me-1"></i> Setujui Laporan';
     } else {
       form.action = "{{ route('Admin.Laporan.approval.reject', ':id') }}".replace(':id', id);
-      btn.classList.remove('btn-primary'); btn.classList.add('btn-danger');
-      btn.textContent = 'Tolak';
+      btn.className = 'btn btn-danger';
+      btn.innerHTML = '<i class="bi bi-x-circle me-1"></i> Tolak Laporan';
+    }
+  });
+
+  // Form submission validation for reject action
+  form?.addEventListener('submit', function(e) {
+    const action = form.action;
+    const isReject = action.includes('/reject');
+    const keterangan = form.querySelector('textarea[name="keterangan"]').value.trim();
+    
+    if (isReject && !keterangan) {
+      e.preventDefault();
+      alert('Alasan penolakan wajib diisi!');
+      form.querySelector('textarea[name="keterangan"]').focus();
+      return false;
     }
   });
 });

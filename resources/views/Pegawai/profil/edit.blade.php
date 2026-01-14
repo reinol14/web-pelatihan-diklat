@@ -74,6 +74,12 @@
         value="{{ old('tanggal_lahir', $pegawai->tanggal_lahir ? date('Y-m-d', strtotime($pegawai->tanggal_lahir)) : '') }}">
     </div>
 
+    <div class="col-12">
+      <label class="form-label fw-semibold">Alamat</label>
+      <textarea name="alamat" class="form-control" rows="3" placeholder="Masukkan alamat lengkap">{{ old('alamat', $pegawai->alamat ?? '') }}</textarea>
+      @error('alamat')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+    </div>
+
     {{-- Data Kepegawaian --}}
     <div class="col-12 mt-4">
       <h5 class="text-secondary fw-bold">Data Kepegawaian</h5>

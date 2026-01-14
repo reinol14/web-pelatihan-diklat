@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\PelatihanSessionController;
 use App\Http\Controllers\Admin\Pegawai\PegawaiProfileApprovalController;
 use App\Http\Controllers\Admin\Pegawai\PegawaiRegistrationApprovalController;
 use App\Http\Controllers\Admin\Pegawai\PelatihanVerifikasiController;
+use App\Http\Controllers\Pegawai\ProfileChangeController;
 
 use App\Http\Controllers\SuperAdmin\AdminUserController;
 use App\Http\Controllers\Pegawai\PegawaiDashboardController;
@@ -56,8 +57,8 @@ Route::middleware(['auth:pegawais'])->group(function () {
     Route::get('/pegawai/profil/status', [PegawaiDashboardController::class, 'status'])->name('Pegawai.profil.status');
     // Profil pegawai
     Route::prefix('pegawai')->name('Pegawai.')->group(function () {
-    Route::get('/profil/edit', [\App\Http\Controllers\Pegawai\ProfileChangeController::class, 'edit'])->name('profil.edit');
-    Route::post('/profil/store', [\App\Http\Controllers\Pegawai\ProfileChangeController::class, 'store'])->name('profil.store');
+    Route::get('/profil/edit', [ProfileChangeController::class, 'edit'])->name('profil.edit');
+    Route::post('/profil/store', [ProfileChangeController::class, 'store'])->name('profil.store');
     });
 
     //Pendaftaran Sesi Pelatihan

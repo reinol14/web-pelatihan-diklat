@@ -114,6 +114,30 @@
               <div class="form-text">PDF/DOC/DOCX, maks 5MB.</div>
             </div>
 
+            <div class="mb-3">
+              <label class="form-label">
+                {{ $mode === 'edit' ? 'Ganti Sertifikat (opsional)' : 'Sertifikat (opsional)' }}
+              </label>
+
+              @if($mode === 'edit' && !empty($laporan->sertifikat))
+                @php
+                  $sertifikatUrl = str_starts_with($laporan->sertifikat, 'http')
+                    ? $laporan->sertifikat
+                    : (str_starts_with($laporan->sertifikat, 'storage/')
+                        ? asset($laporan->sertifikat)
+                        : asset('storage/'.ltrim($laporan->sertifikat, '/')));
+                @endphp
+                <div class="mb-2">
+                  <a href="{{ $sertifikatUrl }}" target="_blank" class="btn btn-sm btn-outline-info">
+                    <i class="bi bi-award me-1"></i> Lihat Sertifikat Saat Ini
+                  </a>
+                </div>
+              @endif
+
+              <input type="file" name="sertifikat" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+              <div class="form-text">PDF/JPG/PNG, maks 5MB.</div>
+            </div>
+
             <div class="d-flex gap-2">
               <a href="{{ route('Pegawai.Laporan.index') }}" class="btn btn-outline-secondary">Batal</a>
               <button type="submit" class="btn btn-primary">

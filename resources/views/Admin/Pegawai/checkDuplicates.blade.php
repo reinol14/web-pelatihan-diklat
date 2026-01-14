@@ -49,7 +49,7 @@
             @if($emptyFields->isEmpty())
                 <p class="text-success mb-0">Tidak ada data kosong ditemukan.</p>
             @else
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered table-hover">
                     <thead class="table-light">
                         <tr>
                             <th>NIP</th>
@@ -57,6 +57,7 @@
                             <th>Nomor HP</th>
                             <th>Nama</th>
                             <th>Jabatan</th>
+                            <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,6 +68,13 @@
                             <td>{{ $row->no_hp ?? '-' }}</td>
                             <td>{{ $row->nama }}</td>
                             <td>{{ $row->jabatan }}</td>
+                            <td class="text-center">
+                                <a href="{{ route('Admin.Pegawai.edit', $row->id ?? $row->nip) }}" 
+                                   class="btn btn-sm btn-warning" 
+                                   title="Edit data pegawai">
+                                    <i class="fa fa-edit me-1"></i> Edit
+                                </a>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -90,14 +98,15 @@
                 const data = JSON.parse(this.dataset.data);
 
                 let htmlTable = `
-                    <table class="table table-bordered">
-                        <thead>
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
                             <tr>
                                 ${key === 'nip' ? '<th>NIP</th>' : ''}
                                 ${key === 'email' ? '<th>Email</th>' : ''}
                                 ${key === 'no_hp' ? '<th>Nomor HP</th>' : ''}
                                 <th>Nama</th>
                                 <th>Jabatan</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -110,6 +119,14 @@
                         ${key === 'no_hp' ? `<td>${row.no_hp}</td>` : ''}
                         <td>${row.nama}</td>
                         <td>${row.jabatan}</td>
+                        <td class="text-center">
+                            <a href="/admin/pegawai/${row.id || row.nip}/edit" 
+                               class="btn btn-sm btn-primary" 
+                               target="_blank"
+                               title="Edit data pegawai">
+                                <i class="fa fa-edit me-1"></i> Edit
+                            </a>
+                        </td>
                     </tr>`;
                 });
 

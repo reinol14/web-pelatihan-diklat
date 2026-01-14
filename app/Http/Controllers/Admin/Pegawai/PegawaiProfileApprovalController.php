@@ -70,7 +70,7 @@ public function show($id)
     $admin = Auth::user();
 
     $item = PegawaiProfileChange::with([
-        'pegawai:id,nip,nama,kode_unitkerja'
+        'pegawai'
     ])->findOrFail($id);
 
     /**

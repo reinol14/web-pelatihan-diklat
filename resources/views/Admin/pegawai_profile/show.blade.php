@@ -124,6 +124,15 @@
                                           class="img-thumbnail"
                                           style="max-height:160px"
                                       >
+                                  @elseif($field === 'kode_unitkerja' && $item->pegawai?->unitKerja)
+                                      {{ $item->pegawai->unitKerja->unitkerja ?? '-' }}
+                                      @if($item->pegawai->unitKerja->sub_unitkerja)
+                                          — {{ $item->pegawai->unitKerja->sub_unitkerja }}
+                                      @endif
+                                  @elseif($field === 'id_atasan' && $item->pegawai?->atasan)
+                                      {{ $item->pegawai->atasan->nama ?? '-' }} ({{ $item->pegawai->atasan->nip ?? '-' }})
+                                  @elseif(in_array($field, ['tempat_lahir', 'tanggal_lahir', 'alamat', 'nama', 'nip', 'email', 'no_hp', 'jabatan', 'pangkat', 'golongan']))
+                                      {{ $item->pegawai?->$field ?? '-' }}
                                   @else
                                       {{ $item->pegawai?->$field ?? '-' }}
                                   @endif
